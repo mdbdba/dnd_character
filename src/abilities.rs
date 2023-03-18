@@ -4,14 +4,8 @@ use crate::modifier::Modifier::DropLowest;
 use crate::roll;
 use crate::roll::roll_die;
 
-
-
-pub struct AbilityScoreModifier {
-    ability_score: i8,
-    modifier: u8
-}
 pub fn get_ability_score_modifier(score: i8) -> i8 {
-    let mut return_value: i8 = 0;
+    let return_value: i8;
     match score {
         1       => return_value = -5,
         2 | 3   => return_value = -4,
