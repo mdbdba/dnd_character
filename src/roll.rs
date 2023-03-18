@@ -15,6 +15,33 @@ pub struct Roll {
     total: i8
 }
 
+impl Roll {
+    pub fn get_sides(&self) -> i8 {
+        i8::from(self.sides)
+    }
+    pub fn get_rolls(&self) -> i8 {
+        i8::from(self.rolls)
+    }
+    pub fn get_modify(&self) -> String {
+        self.modify.to_string()
+    }
+    pub fn get_adjustment(&self) -> i8 {
+        self.adjustment
+    }
+    pub fn get_rawrolls(&self) -> Vec<i8> {
+        self.rawrolls.clone()
+    }
+    pub fn get_performed(&self) -> Vec<i8> {
+        self.performed.clone()
+    }
+    pub fn get_subtotal(&self) -> i8 {
+        self.subtotal
+    }
+    pub fn get_total(&self) -> i8 {
+        self.total
+    }
+}
+
 pub fn roll_die (
     sides: NonZeroI8,
     rolls: NonZeroI8,
@@ -48,16 +75,6 @@ pub fn roll_die (
         }
         Modifier::None => {}
     }
-
-    /* re-sort after changing things around
-    if !amounts.is_empty() {
-        let range = amounts.len() as i8;
-        for _ in 0..=amounts.len() {
-            let a = rng.next_i8() % range + 1;
-            let b = rng.next_i8() % range + 1;
-            amounts.swap(a as usize - 1, b as usize - 1);
-        }
-     } else */
 
     if amounts.is_empty() {
         amounts.push(0);
@@ -95,7 +112,9 @@ mod tests {
         // println!("{:?}", roll.rawrolls);
         // println!("{:?}", roll.performed);
         // println!("{}", roll.total);
+        assert_eq!(roll.performed.len(), roll.get_performed().len());
         assert_eq!(roll.performed.len(), 3);
+        assert_eq!(roll.modify.to_string(), roll.get_modify());
         assert_eq!(roll.modify.to_string(), "kl3");
     }
     #[test]
@@ -159,6 +178,23 @@ mod tests {
         // println!("{}", roll.total);
         assert_eq!(roll.performed.len(), 1);
         assert_eq!(roll.total, (roll.subtotal + 3 ))
+    }
+    #[test]
+    fn test_gets() {
+        let roll = roll_die(
+            NonZeroI8::new(6).unwrap(),
+            NonZeroI8::new(1).unwrap(),
+            Modifier::None,
+            3
+        );
+        assert_eq!(roll.get_sides(), i8::from(6));
+        assert_eq!(roll.get_rolls(), i8::from(1));
+        assert_eq!(roll.get_adjustment(), i8::from(3));
+        assert_eq!(roll.get_modify(), "");
+        println!("{:?}", roll.get_rawrolls());
+        println!("{:?}", roll.get_performed());
+        println!("{}", roll.get_subtotal());
+        println!("{}", roll.get_total());
     }
 }
 
