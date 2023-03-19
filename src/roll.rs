@@ -1,56 +1,56 @@
 use rand::prelude::*;
-use std::num::NonZeroI8;
+use std::num::{NonZeroU8};
 use crate::modifier::Modifier;
 
 
 #[derive(Debug, Clone)]
 pub struct Roll {
-    sides: NonZeroI8,
-    rolls: NonZeroI8,
-    modify: Modifier<i8>,
-    adjustment: i8,
-    rawrolls: Vec<i8>,
-    performed: Vec<i8>,
-    subtotal: i8,
-    total: i8
+    sides: NonZeroU8,
+    rolls: NonZeroU8,
+    modify: Modifier<u8>,
+    adjustment: u8,
+    rawrolls: Vec<u8>,
+    performed: Vec<u8>,
+    subtotal: u8,
+    total: u8
 }
 
 impl Roll {
-    pub fn get_sides(&self) -> i8 {
-        i8::from(self.sides)
+    pub fn get_sides(&self) -> u8 {
+        u8::from(self.sides)
     }
-    pub fn get_rolls(&self) -> i8 {
-        i8::from(self.rolls)
+    pub fn get_rolls(&self) -> u8 {
+        u8::from(self.rolls)
     }
     pub fn get_modify(&self) -> String {
         self.modify.to_string()
     }
-    pub fn get_adjustment(&self) -> i8 {
+    pub fn get_adjustment(&self) -> u8 {
         self.adjustment
     }
-    pub fn get_rawrolls(&self) -> Vec<i8> {
+    pub fn get_rawrolls(&self) -> Vec<u8> {
         self.rawrolls.clone()
     }
-    pub fn get_performed(&self) -> Vec<i8> {
+    pub fn get_performed(&self) -> Vec<u8> {
         self.performed.clone()
     }
-    pub fn get_subtotal(&self) -> i8 {
+    pub fn get_subtotal(&self) -> u8 {
         self.subtotal
     }
-    pub fn get_total(&self) -> i8 {
+    pub fn get_total(&self) -> u8 {
         self.total
     }
 }
 
 pub fn roll_die (
-    sides: NonZeroI8,
-    rolls: NonZeroI8,
-    modify: Modifier<i8>,
-    adjustment: i8) -> Roll
+    sides: NonZeroU8,
+    rolls: NonZeroU8,
+    modify: Modifier<u8>,
+    adjustment: u8) -> Roll
 {
     let mut amounts= Vec::new();
-    let max_range: i8 = i8::from(sides) + 1;
-    for _ in 0..i8::from(rolls) {
+    let max_range: u8 = u8::from(sides) + 1;
+    for _ in 0..u8::from(rolls) {
         let result = thread_rng().gen_range(1..max_range);
         amounts.push(result);
     }
@@ -68,10 +68,10 @@ pub fn roll_die (
         }
         Modifier::DropLowest(i) => {
             amounts.reverse();
-            amounts.truncate(amounts.len() - i.min(amounts.len() as i8) as usize);
+            amounts.truncate(amounts.len() - i.min(amounts.len() as u8) as usize);
         }
         Modifier::DropHighest(i) => {
-            amounts.truncate(amounts.len() - i.min(amounts.len() as i8) as usize);
+            amounts.truncate(amounts.len() - i.min(amounts.len() as u8) as usize);
         }
         Modifier::None => {}
     }
@@ -81,7 +81,7 @@ pub fn roll_die (
     }
     amounts.sort_unstable();
 
-    let tmp_total = amounts.iter().sum::<i8>() as i8;
+    let tmp_total = amounts.iter().sum::<u8>() as u8;
     let total = tmp_total + adjustment;
 
     Roll {
@@ -103,8 +103,8 @@ mod tests {
     #[test]
     fn test_kl() {
         let roll = roll_die(
-            NonZeroI8::new(6).unwrap(),
-            NonZeroI8::new(6).unwrap(),
+            NonZeroU8::new(6).unwrap(),
+            NonZeroU8::new(6).unwrap(),
             Modifier::KeepLowest(3),
             0
         );
@@ -120,8 +120,8 @@ mod tests {
     #[test]
     fn test_kh() {
         let roll = roll_die(
-            NonZeroI8::new(6).unwrap(),
-            NonZeroI8::new(4).unwrap(),
+            NonZeroU8::new(6).unwrap(),
+            NonZeroU8::new(4).unwrap(),
             Modifier::KeepHighest(3),
             0
         );
@@ -135,8 +135,8 @@ mod tests {
     #[test]
     fn test_dl() {
         let roll = roll_die(
-            NonZeroI8::new(20).unwrap(),
-            NonZeroI8::new(2).unwrap(),
+            NonZeroU8::new(20).unwrap(),
+            NonZeroU8::new(2).unwrap(),
             Modifier::DropLowest(1),
             0
         );
@@ -151,8 +151,8 @@ mod tests {
     #[test]
     fn test_dh() {
         let roll = roll_die(
-            NonZeroI8::new(20).unwrap(),
-            NonZeroI8::new(2).unwrap(),
+            NonZeroU8::new(20).unwrap(),
+            NonZeroU8::new(2).unwrap(),
             Modifier::DropHighest(1),
             0
         );
@@ -166,8 +166,8 @@ mod tests {
     #[test]
     fn test_adj() {
         let roll = roll_die(
-            NonZeroI8::new(6).unwrap(),
-            NonZeroI8::new(1).unwrap(),
+            NonZeroU8::new(6).unwrap(),
+            NonZeroU8::new(1).unwrap(),
             Modifier::None,
             3
         );
@@ -182,14 +182,14 @@ mod tests {
     #[test]
     fn test_gets() {
         let roll = roll_die(
-            NonZeroI8::new(6).unwrap(),
-            NonZeroI8::new(1).unwrap(),
+            NonZeroU8::new(6).unwrap(),
+            NonZeroU8::new(1).unwrap(),
             Modifier::None,
             3
         );
-        assert_eq!(roll.get_sides(), i8::from(6));
-        assert_eq!(roll.get_rolls(), i8::from(1));
-        assert_eq!(roll.get_adjustment(), i8::from(3));
+        assert_eq!(roll.get_sides(), u8::from(6));
+        assert_eq!(roll.get_rolls(), u8::from(1));
+        assert_eq!(roll.get_adjustment(), u8::from(3));
         assert_eq!(roll.get_modify(), "");
         println!("{:?}", roll.get_rawrolls());
         println!("{:?}", roll.get_performed());
