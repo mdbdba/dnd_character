@@ -30,11 +30,11 @@ pub fn get_ability_score_modifier(score: i8) -> i8 {
 }
 
 pub struct Ability {
-    description: String,
+    description: &'static str,
     value: roll::Roll
 }
 
-fn roll_ability(description: String) -> Ability {
+fn roll_ability(description: &'static str) -> Ability {
     let six = NonZeroU8::new(6).unwrap();
     let four = NonZeroU8::new(4).unwrap();
 
@@ -47,17 +47,17 @@ fn roll_ability(description: String) -> Ability {
 pub fn roll_ability_scores() -> HashMap<String, Ability> {
     let mut scores = HashMap::new();
     scores.insert(String::from("Strength"),
-                  roll_ability(String::from("approximates physical power")));
+                  roll_ability("approximates physical power"));
     scores.insert(String::from("Dexterity"),
-                  roll_ability(String::from("approximates agility")));
+                  roll_ability("approximates agility"));
     scores.insert(String::from("Constitution"),
-                  roll_ability(String::from("approximates endurance")));
+                  roll_ability("approximates endurance"));
     scores.insert(String::from("Intelligence"),
-                  roll_ability(String::from("approximates reasoning and memory")));
+                  roll_ability("approximates reasoning and memory"));
     scores.insert(String::from("Wisdom"),
-                  roll_ability(String::from("approximates perception and insight")));
+                  roll_ability("approximates perception and insight"));
     scores.insert(String::from("Charisma"),
-                  roll_ability(String::from("approximates force of personality")));
+                  roll_ability("approximates force of personality"));
     scores
 }
 
@@ -103,7 +103,7 @@ mod tests {
     fn test_strength() {
         let scores = roll_ability_scores();
         let ability = scores.get("Strength");
-        assert_eq!(ability.unwrap().description, String::from("approximates physical power"));
+        assert_eq!(ability.unwrap().description, "approximates physical power");
         assert_eq!(ability.unwrap().value.get_sides(), u8::from(6));
         assert_eq!(ability.unwrap().value.get_rolls(), u8::from(4));
         assert_eq!(ability.unwrap().value.get_adjustment(), u8::from(0));
@@ -113,7 +113,7 @@ mod tests {
     fn test_dexterity() {
         let scores = roll_ability_scores();
         let ability = scores.get("Dexterity");
-        assert_eq!(ability.unwrap().description, String::from("approximates agility"));
+        assert_eq!(ability.unwrap().description, "approximates agility");
         assert_eq!(ability.unwrap().value.get_sides(), u8::from(6));
         assert_eq!(ability.unwrap().value.get_rolls(), u8::from(4));
         assert_eq!(ability.unwrap().value.get_adjustment(), u8::from(0));
@@ -123,7 +123,7 @@ mod tests {
     fn test_constitution() {
         let scores = roll_ability_scores();
         let ability = scores.get("Constitution");
-        assert_eq!(ability.unwrap().description, String::from("approximates endurance"));
+        assert_eq!(ability.unwrap().description, "approximates endurance");
         assert_eq!(ability.unwrap().value.get_sides(), u8::from(6));
         assert_eq!(ability.unwrap().value.get_rolls(), u8::from(4));
         assert_eq!(ability.unwrap().value.get_adjustment(), u8::from(0));
@@ -133,7 +133,7 @@ mod tests {
     fn test_intelligence() {
         let scores = roll_ability_scores();
         let ability = scores.get("Intelligence");
-        assert_eq!(ability.unwrap().description, String::from("approximates reasoning and memory"));
+        assert_eq!(ability.unwrap().description, "approximates reasoning and memory");
         assert_eq!(ability.unwrap().value.get_sides(), u8::from(6));
         assert_eq!(ability.unwrap().value.get_rolls(), u8::from(4));
         assert_eq!(ability.unwrap().value.get_adjustment(), u8::from(0));
@@ -143,7 +143,7 @@ mod tests {
     fn test_wisdom() {
         let scores = roll_ability_scores();
         let ability = scores.get("Wisdom");
-        assert_eq!(ability.unwrap().description, String::from("approximates perception and insight"));
+        assert_eq!(ability.unwrap().description, "approximates perception and insight");
         assert_eq!(ability.unwrap().value.get_sides(), u8::from(6));
         assert_eq!(ability.unwrap().value.get_rolls(), u8::from(4));
         assert_eq!(ability.unwrap().value.get_adjustment(), u8::from(0));
@@ -153,7 +153,7 @@ mod tests {
     fn test_charisma() {
         let scores = roll_ability_scores();
         let ability = scores.get("Charisma");
-        assert_eq!(ability.unwrap().description, String::from("approximates force of personality"));
+        assert_eq!(ability.unwrap().description, "approximates force of personality");
         assert_eq!(ability.unwrap().value.get_sides(), u8::from(6));
         assert_eq!(ability.unwrap().value.get_rolls(), u8::from(4));
         assert_eq!(ability.unwrap().value.get_adjustment(), u8::from(0));
