@@ -1,12 +1,11 @@
 use std::collections::HashMap;
-use std::num::NonZeroU8;
 use crate::modifier::Modifier::DropLowest;
 use crate::roll;
 use crate::roll::roll_die;
 use std::convert::TryInto;
 
-pub fn get_ability_score_modifier(score: i8) -> i8 {
-    let return_value: i8;
+pub fn get_ability_score_modifier(score: i16) -> i16 {
+    let return_value: i16;
     match score {
         1       => return_value = -5,
         2 | 3   => return_value = -4,
@@ -30,13 +29,13 @@ pub fn get_ability_score_modifier(score: i8) -> i8 {
 }
 
 pub struct Ability {
-    description: &'static str,
+    description: String,
     value: roll::Roll
 }
 
-fn roll_ability(description: &'static str) -> Ability {
-    let six = NonZeroU8::new(6).unwrap();
-    let four = NonZeroU8::new(4).unwrap();
+fn roll_ability(description: String) -> Ability {
+    let six = 6;
+    let four = 4;
 
     Ability {
         description,
@@ -47,17 +46,17 @@ fn roll_ability(description: &'static str) -> Ability {
 pub fn roll_ability_scores() -> HashMap<String, Ability> {
     let mut scores = HashMap::new();
     scores.insert(String::from("Strength"),
-                  roll_ability("approximates physical power"));
+                  roll_ability(String::from("approximates physical power")));
     scores.insert(String::from("Dexterity"),
-                  roll_ability("approximates agility"));
+                  roll_ability(String::from("approximates agility")));
     scores.insert(String::from("Constitution"),
-                  roll_ability("approximates endurance"));
+                  roll_ability(String::from("approximates endurance")));
     scores.insert(String::from("Intelligence"),
-                  roll_ability("approximates reasoning and memory"));
+                  roll_ability(String::from("approximates reasoning and memory")));
     scores.insert(String::from("Wisdom"),
-                  roll_ability("approximates perception and insight"));
+                  roll_ability(String::from("approximates perception and insight")));
     scores.insert(String::from("Charisma"),
-                  roll_ability("approximates force of personality"));
+                  roll_ability(String::from("approximates force of personality")));
     scores
 }
 
@@ -68,7 +67,7 @@ fn convert_vector_to_array<T, const N: usize>(v: Vec<T>) -> [T; N] {
         .unwrap_or_else(|v: Vec<T>| panic!("Expected a Vec of length {} but it was {}", N, v.len()))
 }
 
-pub fn sort_ability_scores(scores: Vec<u8>, order_by: [u8; 6]) -> Vec<u8> {
+pub fn sort_ability_scores(scores: Vec<i16>, order_by: [usize; 6]) -> Vec<i16> {
     /* order_by array is positionally ordered highest to lowest, so if [1,3,2,4,5,6] then
        We want ability scores ordered:
          Strength,
@@ -84,8 +83,8 @@ pub fn sort_ability_scores(scores: Vec<u8>, order_by: [u8; 6]) -> Vec<u8> {
           for each value in the order_by array
              return_vector.push(value)
     */
-    let mut return_vector: Vec<u8> = vec![];
-    let working_array:[u8;6] = convert_vector_to_array(scores);
+    let mut return_vector: Vec<i16> = vec![];
+    let working_array:[i16;6] = convert_vector_to_array(scores);
     for spec in order_by {
         let derived = spec - 1;
         let stretch: usize = derived.into();
@@ -104,9 +103,9 @@ mod tests {
         let scores = roll_ability_scores();
         let ability = scores.get("Strength");
         assert_eq!(ability.unwrap().description, "approximates physical power");
-        assert_eq!(ability.unwrap().value.get_sides(), u8::from(6));
-        assert_eq!(ability.unwrap().value.get_rolls(), u8::from(4));
-        assert_eq!(ability.unwrap().value.get_adjustment(), u8::from(0));
+        assert_eq!(ability.unwrap().value.get_sides(), 6);
+        assert_eq!(ability.unwrap().value.get_rolls(), 4);
+        assert_eq!(ability.unwrap().value.get_adjustment(), 0);
         assert_eq!(ability.unwrap().value.get_modify(), "dl1");
     }
     #[test]
@@ -114,9 +113,9 @@ mod tests {
         let scores = roll_ability_scores();
         let ability = scores.get("Dexterity");
         assert_eq!(ability.unwrap().description, "approximates agility");
-        assert_eq!(ability.unwrap().value.get_sides(), u8::from(6));
-        assert_eq!(ability.unwrap().value.get_rolls(), u8::from(4));
-        assert_eq!(ability.unwrap().value.get_adjustment(), u8::from(0));
+        assert_eq!(ability.unwrap().value.get_sides(), 6);
+        assert_eq!(ability.unwrap().value.get_rolls(), 4);
+        assert_eq!(ability.unwrap().value.get_adjustment(), 0);
         assert_eq!(ability.unwrap().value.get_modify(), "dl1");
     }
     #[test]
@@ -124,9 +123,9 @@ mod tests {
         let scores = roll_ability_scores();
         let ability = scores.get("Constitution");
         assert_eq!(ability.unwrap().description, "approximates endurance");
-        assert_eq!(ability.unwrap().value.get_sides(), u8::from(6));
-        assert_eq!(ability.unwrap().value.get_rolls(), u8::from(4));
-        assert_eq!(ability.unwrap().value.get_adjustment(), u8::from(0));
+        assert_eq!(ability.unwrap().value.get_sides(), 6);
+        assert_eq!(ability.unwrap().value.get_rolls(), 4);
+        assert_eq!(ability.unwrap().value.get_adjustment(), 0);
         assert_eq!(ability.unwrap().value.get_modify(), "dl1");
     }
     #[test]
@@ -134,9 +133,9 @@ mod tests {
         let scores = roll_ability_scores();
         let ability = scores.get("Intelligence");
         assert_eq!(ability.unwrap().description, "approximates reasoning and memory");
-        assert_eq!(ability.unwrap().value.get_sides(), u8::from(6));
-        assert_eq!(ability.unwrap().value.get_rolls(), u8::from(4));
-        assert_eq!(ability.unwrap().value.get_adjustment(), u8::from(0));
+        assert_eq!(ability.unwrap().value.get_sides(), 6);
+        assert_eq!(ability.unwrap().value.get_rolls(), 4);
+        assert_eq!(ability.unwrap().value.get_adjustment(), 0);
         assert_eq!(ability.unwrap().value.get_modify(), "dl1");
     }
     #[test]
@@ -144,9 +143,9 @@ mod tests {
         let scores = roll_ability_scores();
         let ability = scores.get("Wisdom");
         assert_eq!(ability.unwrap().description, "approximates perception and insight");
-        assert_eq!(ability.unwrap().value.get_sides(), u8::from(6));
-        assert_eq!(ability.unwrap().value.get_rolls(), u8::from(4));
-        assert_eq!(ability.unwrap().value.get_adjustment(), u8::from(0));
+        assert_eq!(ability.unwrap().value.get_sides(), 6);
+        assert_eq!(ability.unwrap().value.get_rolls(), 4);
+        assert_eq!(ability.unwrap().value.get_adjustment(), 0);
         assert_eq!(ability.unwrap().value.get_modify(), "dl1");
     }
     #[test]
@@ -154,29 +153,29 @@ mod tests {
         let scores = roll_ability_scores();
         let ability = scores.get("Charisma");
         assert_eq!(ability.unwrap().description, "approximates force of personality");
-        assert_eq!(ability.unwrap().value.get_sides(), u8::from(6));
-        assert_eq!(ability.unwrap().value.get_rolls(), u8::from(4));
-        assert_eq!(ability.unwrap().value.get_adjustment(), u8::from(0));
+        assert_eq!(ability.unwrap().value.get_sides(), 6);
+        assert_eq!(ability.unwrap().value.get_rolls(), 4);
+        assert_eq!(ability.unwrap().value.get_adjustment(), 0);
         assert_eq!(ability.unwrap().value.get_modify(), "dl1");
     }
     #[test]
     fn test_get_modifier_for_one() {
-        let score_modifier = get_ability_score_modifier(i8::from(1));
+        let score_modifier = get_ability_score_modifier(1);
         assert_eq!(score_modifier, -5);
     }
     #[test]
     fn test_get_modifier_for_ten() {
-        let score_modifier = get_ability_score_modifier(i8::from(10));
+        let score_modifier = get_ability_score_modifier(10);
         assert_eq!(score_modifier, 0);
     }
     #[test]
     fn test_get_modifier_for_twenty() {
-        let score_modifier = get_ability_score_modifier(i8::from(20));
+        let score_modifier = get_ability_score_modifier(20);
         assert_eq!(score_modifier, 5);
     }
     #[test]
     fn test_get_modifier_for_thirty() {
-        let score_modifier = get_ability_score_modifier(i8::from(30));
+        let score_modifier = get_ability_score_modifier(30);
         assert_eq!(score_modifier, 10);
     }
     #[test]
