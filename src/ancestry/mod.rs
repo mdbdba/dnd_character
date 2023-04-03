@@ -411,20 +411,24 @@ instead of just a single monoculture. Doing so will enrich your setting and make
 alive and dynamic.
 */
 
+mod dragonborn;
+
+use std::clone::Clone;
 use std::collections::HashMap;
-use rand::prelude::SliceRandom;
+use rand::prelude::{SliceRandom};
 use rand::Rng;
+use crate::ancestry::dragonborn::{DragonbornColor, new_dragonborn};
 use crate::modifier::Modifier;
 use crate::roll::roll_die;
 
 #[derive(Clone)]
-struct CharacterAbility {
-    ability_name: String, // What the ability is named in the documentation
-    category: String, // For sorting into what it does for the character. (Spell, Language)
-    specific_effect: Vec<String>, // What is it allowing, like Spell Name, language name
-    range: Vec<String>, // actual distances for spells and melee, or read, written, and spoken for language.
-    mechanic: Vec<String>, // explaining the mechanic to be used. amt of damage, attack roll vs. save, etc
-    availability: Vec<String>, // Always, 1 per long rest, etc.
+pub struct CharacterAbility {
+    pub ability_name: String, // What the ability is named in the documentation
+    pub category: String, // For sorting into what it does for the character. (Spell, Language)
+    pub specific_effect: Vec<String>, // What is it allowing, like Spell Name, language name
+    pub range: Vec<String>, // actual distances for spells and melee, or read, written, and spoken for language.
+    pub mechanic: Vec<String>, // explaining the mechanic to be used. amt of damage, attack roll vs. save, etc
+    pub availability: Vec<String>, // Always, 1 per long rest, etc.
 
 }
 
@@ -518,58 +522,44 @@ impl BaseAncestralTraits {
 }
 
 pub struct AncestralTraits {
-    name: String,
-    parent_name: String,
-    age: i16,
-    base_walking_speed: i16,
-    height: i16,
-    weight: i16,
-    base_size: String,
-    alignment: String,
-    skin_tone: String,
-    hair_color: String,
-    hair_type: String,
-    eye_color: String,
-    abilities: Vec<CharacterAbility>,
-    source_material: String,
-    source_credit_url: String,
-    source_credit_comment: String,
+    pub name: String,
+    pub parent_name: String,
+    pub age: i16,
+    pub base_walking_speed: i16,
+    pub height: i16,
+    pub weight: i16,
+    pub base_size: String,
+    pub alignment: String,
+    pub skin_tone: String,
+    pub hair_color: String,
+    pub hair_type: String,
+    pub eye_color: String,
+    pub abilities: Vec<CharacterAbility>,
+    pub source_material: String,
+    pub source_credit_url: String,
+    pub source_credit_comment: String,
 }
 
 impl AncestralTraits {
     pub fn new(name: String) -> AncestralTraits {
         let ancestry_name = &name[..];
-        let black = String::from("black");
-        let blue = String::from("blue");
-        let brass = String::from("brass");
-        let bronze = String::from("bronze");
-        let copper = String::from("copper");
-        let gold = String::from("gold");
-        let green = String::from("green");
-        let red = String::from("red");
-        let silver = String::from("silver");
-        let white = String::from("white");
+
         match ancestry_name {
-            "black dragonborn"  => new_dragonborn(black),
-            "blue dragonborn"   => new_dragonborn(blue),
-            "brass dragonborn"  => new_dragonborn(brass),
-            "bronze dragonborn" => new_dragonborn(bronze),
-            "copper dragonborn" => new_dragonborn(copper),
-            "gold dragonborn"   => new_dragonborn(gold),
-            "green dragonborn"  => new_dragonborn(green),
-            "red dragonborn"   => new_dragonborn(red),
-            "silver dragonborn" => new_dragonborn(silver),
-            "white dragonborn"  => new_dragonborn(white),
+            "black dragonborn"  => new_dragonborn(DragonbornColor::Black),
+            "blue dragonborn"   => new_dragonborn(DragonbornColor::Blue),
+            "brass dragonborn"  => new_dragonborn(DragonbornColor::Brass),
+            "bronze dragonborn" => new_dragonborn(DragonbornColor::Bronze),
+            "copper dragonborn" => new_dragonborn(DragonbornColor::Copper),
+            "gold dragonborn"   => new_dragonborn(DragonbornColor::Gold),
+            "green dragonborn"  => new_dragonborn(DragonbornColor::Green),
+            "red dragonborn"   => new_dragonborn(DragonbornColor::Red),
+            "silver dragonborn" => new_dragonborn(DragonbornColor::Silver),
+            "white dragonborn"  => new_dragonborn(DragonbornColor::White),
             "dragonborn"        => {
-                // Passing just "dragonborn" will cause a random type selection.
-                let colors = vec! {
-                    black, blue, brass, bronze, copper, gold, green, red, silver, white
-                };
-                let mut rng = rand::thread_rng();
-                let color: String = colors.choose(&mut rng).cloned().unwrap();
+                let color: DragonbornColor = rand::random();
                 new_dragonborn(color)
             },
-            _ => new_dragonborn(red),
+            _ => new_dragonborn(DragonbornColor::Red),
         }
     }
 }
@@ -666,29 +656,46 @@ creatures and includes numerous hard consonants and sibilants.
 
 Dragon Lore. Dragonborn communities are often proud of their draconic heritage. You have advantage
 on any Intelligence checks to recall information about dragons.
-*/
 
+#[derive(Debug)]
+pub enum DragonbornColor {
+    Black,
+    Blue,
+    Brass,
+    Bronze,
+    Copper,
+    Gold,
+    Green,
+    Red,
+    Silver, White,
+}
+impl Distribution<DragonbornColor> for Standard {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> DragonbornColor {
+        match rng.gen_range(0..10) {
+            0 => DragonbornColor::Black,
+            1 => DragonbornColor::Blue,
+            2 => DragonbornColor::Brass,
+            3 => DragonbornColor::Bronze,
+            4 => DragonbornColor::Copper,
+            5 => DragonbornColor::Gold,
+            6 => DragonbornColor::Green,
+            7 => DragonbornColor::Red,
+            8 => DragonbornColor::Silver,
+            9 => DragonbornColor::White,
+            _ => DragonbornColor::Red,
+        }
+    }
+}
 
-pub fn new_dragonborn(color: String) -> AncestralTraits {
-    /*
-    let black = String::from("black");
-    let blue = String::from("blue");
-    let brass = String::from("brass");
-    let bronze = String::from("bronze");
-    let copper = String::from("copper");
-    let gold = String::from("gold");
-    let green = String::from("green");
-    let red = String::from("red");
-    let silver = String::from("silver");
-    let white = String::from("white");
+pub fn new_dragonborn(color: DragonbornColor) -> AncestralTraits {
 
-     */
     let skin_color: String;
     let resistance: String;
     let effect_range: Vec<String>;
-    let matcher = &color[..];
-    match matcher {
-        "black"  => {
+    //let matcher = &color[..];
+    //match matcher {
+    match color {
+        DragonbornColor::Black => {
             skin_color = String::from("black scales");
             resistance = String::from("acid");
             effect_range = vec! {
@@ -697,7 +704,7 @@ pub fn new_dragonborn(color: String) -> AncestralTraits {
                 String::from("half damage")
             };
         },
-        "blue"   => {
+        DragonbornColor::Blue => {
             skin_color = String::from("blue scales");
             resistance = String::from("lightning");
             effect_range = vec! {
@@ -706,7 +713,7 @@ pub fn new_dragonborn(color: String) -> AncestralTraits {
                 String::from("half damage")
             };
         },
-        "brass"  => {
+        DragonbornColor::Brass => {
             skin_color = String::from("brass scales");
             resistance = String::from("fire");
             effect_range = vec! {
@@ -715,7 +722,7 @@ pub fn new_dragonborn(color: String) -> AncestralTraits {
                 String::from("half damage")
             };
         },
-        "bronze" => {
+        DragonbornColor::Bronze => {
             skin_color = String::from("bronze scales");
             resistance = String::from("lightning");
             effect_range = vec! {
@@ -724,7 +731,7 @@ pub fn new_dragonborn(color: String) -> AncestralTraits {
                 String::from("half damage")
             };
         },
-        "copper" => {
+        DragonbornColor::Copper => {
             skin_color = String::from("copper scales");
             resistance = String::from("acid");
             effect_range = vec! {
@@ -733,7 +740,7 @@ pub fn new_dragonborn(color: String) -> AncestralTraits {
                 String::from("half damage")
             };
         },
-        "gold"   => {
+        DragonbornColor::Gold => {
             skin_color = String::from("gold scales");
             resistance = String::from("fire");
             effect_range = vec! {
@@ -742,7 +749,7 @@ pub fn new_dragonborn(color: String) -> AncestralTraits {
                 String::from("half damage")
             };
         },
-        "green"  => {
+        DragonbornColor::Green => {
             skin_color = String::from("green scales");
             resistance = String::from("poison");
             effect_range = vec! {
@@ -751,7 +758,7 @@ pub fn new_dragonborn(color: String) -> AncestralTraits {
                 String::from("half damage")
             };
         },
-        "red"    => {
+        DragonbornColor::Red => {
             skin_color = String::from("red scales");
             resistance = String::from("fire");
             effect_range = vec! {
@@ -760,7 +767,7 @@ pub fn new_dragonborn(color: String) -> AncestralTraits {
                 String::from("half damage")
             };
         },
-        "silver" => {
+        DragonbornColor::Silver => {
             skin_color = String::from("silver scales");
             resistance = String::from("cold");
             effect_range = vec! {
@@ -769,7 +776,7 @@ pub fn new_dragonborn(color: String) -> AncestralTraits {
                 String::from("half damage")
             };
         },
-        "white"  => {
+        DragonbornColor::White  => {
             skin_color = String::from("white scales");
             resistance = String::from("cold");
             effect_range = vec! {
@@ -778,19 +785,10 @@ pub fn new_dragonborn(color: String) -> AncestralTraits {
                 String::from("half damage")
             };
         },
-        _        => {
-            skin_color = String::from("red scales");
-            resistance = String::from("fire");
-            effect_range = vec! {
-                String::from("15 foot cone"),
-                String::from("dexterity"),
-                String::from("half damage")
-            };
-        },
 
     };
     let parent_name = String::from("dragonborn");
-    let combined_name = format!("{} {}", color.clone(), parent_name.clone());
+    let combined_name = format!("{:?} {}", color, parent_name.clone()).to_lowercase();
     let base_values = BaseAncestralTraits {
         name: combined_name,
         parent_name,
@@ -802,7 +800,7 @@ pub fn new_dragonborn(color: String) -> AncestralTraits {
         height_modifier_die: 6,
         height_modifier_adj: 0,
         weight_min_pounds: 180,
-        weight_modifier_multiplier: 4,
+        weight_modifier_multiplier: 6,
         weight_modifier_die: 12,
         weight_modifier_adj: 0,
         base_size: String::from("medium"),
@@ -931,10 +929,38 @@ mod tests {
         let db = AncestralTraits::new(String::from("black dragonborn"));
         assert_eq!(db.name, String::from("black dragonborn"));
         assert_eq!(db.parent_name, String::from("dragonborn"));
-        assert!(db.age >= 15, "Expected 15, got {}", db.age);
+        assert!(db.age >= 15 && db.age <= 80, "Expected 15, got {}", db.age);
+        assert_eq!(db.base_walking_speed, 30);
+        assert!(db.height > 70 && db.height <=82, "Expected between 70..82, got {}", db.height);
+        assert!(db.weight > 180 && db.weight <=234, "Expected between 180..234, got {}", db.weight);
+        assert!(db.skin_tone.len() > 0, "Skin tone is empty" );
+        assert!(db.hair_color.len() > 0, "Hair color is empty" );
+        assert!(db.hair_type.len() > 0, "Hair type is empty" );
+        assert!(db.eye_color.len() > 0, "Eye color is empty" );
+        let result = db.abilities.iter().any(|b| b.ability_name.contains(&String::from("damage resistance")));
+        assert_eq!(result, true);
     }
-}
+    #[test]
+    fn test_blue_dragonborn() {
+        let db = AncestralTraits::new(String::from("blue dragonborn"));
+        assert_eq!(db.name, String::from("blue dragonborn"));
+        assert_eq!(db.parent_name, String::from("dragonborn"));
+    }
+    #[test]
+    fn test_random_dragonborn() {
+        let db = AncestralTraits::new(String::from("dragonborn"));
+        assert_eq!(db.parent_name, String::from("dragonborn"));
+        assert!(db.name.len() > 12, "Expecting anything with dragonborn: found {}", db.name);
+    }
+    #[test]
+    fn test_default_ancestry() {
+        let db = AncestralTraits::new(String::from("bornfree"));
+        assert_eq!(db.name, String::from("red dragonborn"));
+        assert_eq!(db.parent_name, String::from("dragonborn"));
+    }
 
+}
+*/
 /*
 Dwarf
 The origins of dwarves are shrouded in myth, with some saying that their ancestors were fashioned
