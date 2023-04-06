@@ -72,6 +72,7 @@ use rand::distributions::Standard;
 use rand::prelude::Distribution;
 use rand::Rng;
 use crate::ancestry::{AncestralTraits, BaseAncestralTraits, CharacterAbility};
+use crate::character::CharacterPreferences;
 
 #[derive(Debug)]
 pub enum DragonbornColor {
@@ -83,7 +84,8 @@ pub enum DragonbornColor {
     Gold,
     Green,
     Red,
-    Silver, White,
+    Silver,
+    White,
 }
 impl Distribution<DragonbornColor> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> DragonbornColor {
@@ -103,13 +105,33 @@ impl Distribution<DragonbornColor> for Standard {
     }
 }
 
-pub fn new_dragonborn(color: DragonbornColor) -> AncestralTraits {
+// pub fn new_dragonborn(color: DragonbornColor) -> AncestralTraits {
+pub fn new_dragonborn(prefs: &CharacterPreferences) -> AncestralTraits {
+    let parent_name = String::from("dragonborn");
+    let ans_string = prefs.ancestry.clone();
+    let ans = &ans_string[..];
+
+    let color = match ans {
+        "black dragonborn"  => DragonbornColor::Black ,
+        "blue dragonborn"   => DragonbornColor::Blue ,
+        "brass dragonborn"  => DragonbornColor::Brass ,
+        "bronze dragonborn" => DragonbornColor::Bronze ,
+        "copper dragonborn" => DragonbornColor::Copper ,
+        "gold dragonborn"   => DragonbornColor::Gold ,
+        "green dragonborn"  => DragonbornColor::Green ,
+        "red dragonborn"    => DragonbornColor::Red,
+        "silver dragonborn" => DragonbornColor::Silver ,
+        "white dragonborn"  => DragonbornColor::White ,
+        _ => {
+            let color: DragonbornColor = rand::random();
+            color
+        },
+    };
+
 
     let skin_color: String;
     let resistance: String;
     let effect_range: Vec<String>;
-    //let matcher = &color[..];
-    //match matcher {
     match color {
         DragonbornColor::Black => {
             skin_color = String::from("black scales");
@@ -201,24 +223,12 @@ pub fn new_dragonborn(color: DragonbornColor) -> AncestralTraits {
                 String::from("half damage")
             };
         },
-        /*
-        _        => {
-            skin_color = String::from("red scales");
-            resistance = String::from("fire");
-            effect_range = vec! {
-                String::from("15 foot cone"),
-                String::from("dexterity"),
-                String::from("half damage")
-            };
-
-        },
-        */
-
     };
-    let parent_name = String::from("dragonborn");
+
     let combined_name = format!("{:?} {}", color, parent_name.clone()).to_lowercase();
+    println!("The combined name: {combined_name}");
     let base_values = BaseAncestralTraits {
-        name: combined_name,
+        name: combined_name.clone(),
         parent_name,
         maturity_age: 15,
         avg_max_age: 80,
@@ -351,11 +361,16 @@ pub fn new_dragonborn(color: DragonbornColor) -> AncestralTraits {
 #[cfg(test)]
 mod tests {
     use crate::ancestry::AncestralTraits;
+    use crate::character::CharacterPreferences;
     // use super::*;
 
     #[test]
     fn test_black_dragonborn() {
-        let db = AncestralTraits::new(String::from("black dragonborn"));
+        let prefs = CharacterPreferences {
+            ancestry:  String::from("black dragonborn"),
+            ..CharacterPreferences::default()
+        };
+        let db = AncestralTraits::new(&prefs);
         assert_eq!(db.name, String::from("black dragonborn"));
         assert_eq!(db.parent_name, String::from("dragonborn"));
         assert!(db.age >= 15 && db.age <= 80, "Expected 15, got {}", db.age);
@@ -371,21 +386,35 @@ mod tests {
     }
     #[test]
     fn test_blue_dragonborn() {
-        let db = AncestralTraits::new(String::from("blue dragonborn"));
+        let prefs = CharacterPreferences {
+            ancestry:  String::from("blue dragonborn"),
+            ..CharacterPreferences::default()
+        };
+        let db = AncestralTraits::new(&prefs);
         assert_eq!(db.name, String::from("blue dragonborn"));
         assert_eq!(db.parent_name, String::from("dragonborn"));
     }
     #[test]
     fn test_random_dragonborn() {
-        let db = AncestralTraits::new(String::from("dragonborn"));
+
+        let prefs = CharacterPreferences {
+            ancestry:  String::from("dragonborn"),
+            ..CharacterPreferences::default()
+        };
+        let db = AncestralTraits::new(&prefs);
         assert_eq!(db.parent_name, String::from("dragonborn"));
         assert!(db.name.len() > 12, "Expecting anything with dragonborn: found {}", db.name);
     }
     #[test]
     fn test_default_ancestry() {
-        let db = AncestralTraits::new(String::from("bornfree"));
-        assert_eq!(db.name, String::from("red dragonborn"));
+
+        let prefs = CharacterPreferences {
+            ancestry:  String::from("bornfree"),
+            ..CharacterPreferences::default()
+        };
+        let db = AncestralTraits::new(&prefs);
         assert_eq!(db.parent_name, String::from("dragonborn"));
+        assert!(db.name.len() > 12, "Expecting anything with dragonborn: found {}", db.name);
     }
 
 }
