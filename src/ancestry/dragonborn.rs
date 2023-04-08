@@ -276,18 +276,59 @@ pub fn new_dragonborn(prefs: &CharacterPreferences) -> AncestralTraits {
         },
         source_credit_comment: {String::from("As of 2023/03/25") }
     };
-    let name = base_values.get_name();
+    let name= base_values.get_name();
     let parent_name = base_values.get_parent_name();
-    let age = base_values.get_age();
+    let age;
+    if prefs.age != -999 {
+        age = prefs.age.clone();
+    } else {
+        age = base_values.get_age();
+    }
     let base_size = base_values.get_base_size();
     let base_walking_speed = base_values.get_base_walking_speed();
-    let height = base_values.get_height();
-    let weight = base_values.get_weight();
-    let alignment = base_values.get_alignment();
-    let skin_tone = base_values.get_skin_tone();
-    let hair_color = base_values.get_hair_color();
-    let hair_type = base_values.get_hair_type();
-    let eye_color = base_values.get_eye_color();
+    let height;
+    if prefs.height != -999 {
+        height = prefs.height.clone();
+    } else {
+        height = base_values.get_height();
+    }
+    let weight;
+    if prefs.weight != -999 {
+        weight = prefs.weight.clone();
+    } else {
+        weight = base_values.get_weight();
+    }
+
+    let alignment;
+    if prefs.alignment != "None" {
+        alignment = prefs.alignment.clone();
+    } else {
+        alignment = base_values.get_alignment();
+    }
+    let skin_tone;
+    if prefs.skin_tone != "None" {
+        skin_tone = prefs.skin_tone.clone();
+    } else {
+        skin_tone = base_values.get_skin_tone();
+    }
+    let hair_color;
+    if prefs.hair_color != "None" {
+        hair_color = prefs.hair_color.clone();
+    } else {
+        hair_color = base_values.get_hair_color();
+    }
+    let hair_type;
+    if prefs.hair_type != "None" {
+        hair_type = prefs.hair_type.clone();
+    } else {
+        hair_type = base_values.get_hair_type();
+    }
+    let eye_color;
+    if prefs.eye_color != "None" {
+        eye_color = prefs.eye_color.clone();
+    } else {
+        eye_color = base_values.get_eye_color();
+    }
 
     AncestralTraits {
         name,
@@ -417,4 +458,33 @@ mod tests {
         assert!(db.name.len() > 12, "Expecting anything with dragonborn: found {}", db.name);
     }
 
+    #[test]
+    fn test_all_ancestry_prefs() {
+        let prefs = CharacterPreferences {
+            name: String::from("chuck"),
+            ancestry: String::from("silver dragonborn"),
+            age: 99,
+            height: 92,
+            weight: 275,
+            alignment: String::from("Chaotic Neutral"),
+            culture: String::from("dragonborn"),
+            skin_tone: String::from("silver"),
+            eye_color: String::from("black"),
+            hair_type: String::from("bald"),
+            hair_color: String::from("none"),
+        };
+        let db = AncestralTraits::new(&prefs);
+        assert_eq!(db.name, String::from("silver dragonborn"));
+        assert_eq!(db.parent_name, String::from("dragonborn"));
+        assert_eq!(db.age, 99);
+        assert_eq!(db.base_walking_speed, 30);
+        assert_eq!(db.height, 92);
+        assert_eq!(db.weight, 275);
+        assert_eq!(db.base_size, String::from("medium"));
+        assert_eq!(db.alignment, String::from("Chaotic Neutral"));
+        assert_eq!(db.skin_tone, String::from("silver"));
+        assert_eq!(db.hair_color, String::from("none"));
+        assert_eq!(db.hair_type, String::from("bald"));
+        assert_eq!(db.eye_color, String::from("black"));
+    }
 }
