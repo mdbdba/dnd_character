@@ -45,26 +45,6 @@ Silver	Cold	    15 ft. cone (Con. save)
 White	Cold	    15 ft. cone (Con. save)
 Damage Resistance. You have resistance to the damage type associated with your draconic ancestry.
 
-Cultural Traits
-Dragonborn culture is intense and exciting, leading those raised within it to be striking and
-remarkable individuals. Grand festivals and elaborate holidays are frequent, each centered around
-a different physical competition or performance.
-
-In general, practices in dragonborn culture and education tend to promote athleticism and personal
-character.
-
-Ability Score Increase. Your Strength score increases by 2, and your Charisma score increases by 1.
-
-Alignment. Because dragonborn culture values intense commitments and expression, many raised in
-this culture find themselves drawn to one side or the other in the cosmic war between good and evil.
-Most dragonborn are good, but those who side with evil can be terrible villains.
-
-Languages. You can speak, read, and write Common and Draconic. Draconic is thought to be one of the
-oldest languages and is often used in the study of magic. The language sounds harsh to most other
-creatures and includes numerous hard consonants and sibilants.
-
-Dragon Lore. Dragonborn communities are often proud of their draconic heritage. You have advantage
-on any Intelligence checks to recall information about dragons.
 */
 
 use std::collections::HashMap;
@@ -105,9 +85,8 @@ impl Distribution<DragonbornColor> for Standard {
     }
 }
 
-// pub fn new_dragonborn(color: DragonbornColor) -> AncestralTraits {
-pub fn new_dragonborn(prefs: &CharacterPreferences) -> AncestralTraits {
-    let parent_name = String::from("dragonborn");
+pub fn new_dragonborn(prefs: &mut CharacterPreferences) -> AncestralTraits {
+    let parent_name = "dragonborn".to_string();
     let ans_string = prefs.ancestry.clone();
     let ans = &ans_string[..];
 
@@ -134,99 +113,177 @@ pub fn new_dragonborn(prefs: &CharacterPreferences) -> AncestralTraits {
     let effect_range: Vec<String>;
     match color {
         DragonbornColor::Black => {
-            skin_color = String::from("black scales");
-            resistance = String::from("acid");
+            skin_color = "black scales".to_string();
+            resistance = "acid".to_string();
             effect_range = vec! {
-                String::from("5 by 30 foot line"),
-                String::from("dexterity"),
-                String::from("half damage")
+                "5 by 30 foot line".to_string(),
+                "dexterity".to_string(),
+                "half damage".to_string()
             };
         },
         DragonbornColor::Blue => {
-            skin_color = String::from("blue scales");
-            resistance = String::from("lightning");
+            skin_color = "blue scales".to_string();
+            resistance = "lightning".to_string();
             effect_range = vec! {
-                String::from("5 by 30 foot line"),
-                String::from("dexterity"),
-                String::from("half damage")
+                "5 by 30 foot line".to_string(),
+                "dexterity".to_string(),
+                "half damage".to_string()
             };
         },
         DragonbornColor::Brass => {
-            skin_color = String::from("brass scales");
-            resistance = String::from("fire");
+            skin_color = "brass scales".to_string();
+            resistance = "fire".to_string();
             effect_range = vec! {
-                String::from("5 by 30 foot line"),
-                String::from("dexterity"),
-                String::from("half damage")
+                "5 by 30 foot line".to_string(),
+                "dexterity".to_string(),
+                "half damage".to_string()
             };
         },
         DragonbornColor::Bronze => {
-            skin_color = String::from("bronze scales");
-            resistance = String::from("lightning");
+            skin_color = "bronze scales".to_string();
+            resistance = "lightning".to_string();
             effect_range = vec! {
-                String::from("5 by 30 foot line"),
-                String::from("dexterity"),
-                String::from("half damage")
+                "5 by 30 foot line".to_string(),
+                "dexterity".to_string(),
+                "half damage".to_string()
             };
         },
         DragonbornColor::Copper => {
-            skin_color = String::from("copper scales");
-            resistance = String::from("acid");
+            skin_color = "copper scales".to_string();
+            resistance = "acid".to_string();
             effect_range = vec! {
-                String::from("5 by 30 foot line"),
-                String::from("dexterity"),
-                String::from("half damage")
+                "5 by 30 foot line".to_string(),
+                "dexterity".to_string(),
+                "half damage".to_string()
             };
         },
         DragonbornColor::Gold => {
-            skin_color = String::from("gold scales");
-            resistance = String::from("fire");
+            skin_color = "gold scales".to_string();
+            resistance = "fire".to_string();
             effect_range = vec! {
-                String::from("15 foot cone"),
-                String::from("dexterity"),
-                String::from("half damage")
+                "15 foot cone".to_string(),
+                "dexterity".to_string(),
+                "half damage".to_string()
             };
         },
         DragonbornColor::Green => {
-            skin_color = String::from("green scales");
-            resistance = String::from("poison");
+            skin_color = "green scales".to_string();
+            resistance = "poison".to_string();
             effect_range = vec! {
-                String::from("15 foot cone"),
-                String::from("constitution"),
-                String::from("half damage")
+                "15 foot cone".to_string(),
+                "constitution".to_string(),
+                "half damage".to_string()
             };
         },
         DragonbornColor::Red => {
-            skin_color = String::from("red scales");
-            resistance = String::from("fire");
+            skin_color = "red scales".to_string();
+            resistance = "fire".to_string();
             effect_range = vec! {
-                String::from("15 foot cone"),
-                String::from("dexterity"),
-                String::from("half damage")
+                "15 foot cone".to_string(),
+                "dexterity".to_string(),
+                "half damage".to_string()
             };
         },
         DragonbornColor::Silver => {
-            skin_color = String::from("silver scales");
-            resistance = String::from("cold");
+            skin_color = "silver scales".to_string();
+            resistance = "cold".to_string();
             effect_range = vec! {
-                String::from("15 foot cone"),
-                String::from("constitution"),
-                String::from("half damage")
+                "15 foot cone".to_string(),
+                "constitution".to_string(),
+                "half damage".to_string()
             };
         },
         DragonbornColor::White  => {
-            skin_color = String::from("white scales");
-            resistance = String::from("cold");
+            skin_color = "white scales".to_string();
+            resistance = "cold".to_string();
             effect_range = vec! {
-                String::from("15 foot cone"),
-                String::from("constitution"),
-                String::from("half damage")
+                "15 foot cone".to_string(),
+                "constitution".to_string(),
+                "half damage".to_string()
             };
         },
     };
 
     let combined_name = format!("{:?} {}", color, parent_name.clone()).to_lowercase();
-    println!("The combined name: {combined_name}");
+
+    let mut ancestry_abilities: HashMap<String, HashMap<String, CharacterAbility>> = HashMap::new();
+
+    let mut resistances: HashMap<String, CharacterAbility> = HashMap::new();
+    let ability1 = CharacterAbility{
+        ability_name: "damage resistance".to_string(),
+        category: "resistance".to_string(),
+        specific_effect: vec! {resistance.clone()},
+        range: vec!{"all".to_string()},
+        mechanic: vec!{"half damage".to_string()},
+        availability: vec!{"always".to_string()}
+    };
+    resistances.insert(resistance.clone(), ability1);
+
+    let mut languages: HashMap<String, CharacterAbility> = HashMap::new();
+    let ability1 = CharacterAbility{
+            ability_name: "ancestral language".to_string(),
+            category: "language".to_string(),
+            specific_effect: vec!{"common".to_string()},
+            range: vec!{
+                "speak".to_string(),
+                "read".to_string(),
+                "write".to_string()},
+            mechanic: vec!{"none".to_string()},
+            availability: vec!{"always".to_string()}
+        };
+    let ability2 =  CharacterAbility{
+        ability_name: "ancestral language".to_string(),
+        category: "language".to_string(),
+        specific_effect: vec!{"draconic".to_string()},
+        range: vec!{
+            "speak".to_string(),
+            "read".to_string(),
+            "write".to_string()},
+        mechanic: vec!{"none".to_string()},
+        availability: vec!{"always".to_string()}
+    };
+    languages.insert("common".to_string(), ability1);
+    languages.insert("draconic".to_string(), ability2);
+
+
+    let mut checks: HashMap<String, CharacterAbility> = HashMap::new();
+    let ability1 = CharacterAbility{
+        ability_name: "dragon lore".to_string(),
+        category: "checks".to_string(),
+        specific_effect: vec!{
+            "intelligence".to_string(),
+            "specific to dragons".to_string()
+        },
+        range: vec!{"none".to_string()},
+        mechanic: vec!{"advantage".to_string()},
+        availability: vec!{"always".to_string()}
+    };
+    checks.insert("intelligence".to_string(), ability1);
+
+    let mut offensive: HashMap<String, CharacterAbility> = HashMap::new();
+    let ability1 = CharacterAbility{
+        ability_name: "breath weapon".to_string(),
+        category: "offensive".to_string(),
+        specific_effect: vec! {resistance.clone()},
+        range: effect_range,
+        mechanic: vec!{
+            "1:2d6".to_string(),
+            "6:3d6".to_string(),
+            "11:4d6".to_string(),
+            "16:5d6".to_string()
+        },
+        availability: vec!{
+            "short rest".to_string(),
+            "long rest".to_string()
+        }
+    };
+    offensive.insert("breath weapon".to_string(), ability1);
+
+    ancestry_abilities.insert("resistances".to_string(), resistances);
+    ancestry_abilities.insert("languages".to_string(), languages);
+    ancestry_abilities.insert("offensive".to_string(), offensive);
+    ancestry_abilities.insert("checks".to_string(), checks);
+
     let base_values = BaseAncestralTraits {
         name: combined_name.clone(),
         parent_name,
@@ -241,250 +298,184 @@ pub fn new_dragonborn(prefs: &CharacterPreferences) -> AncestralTraits {
         weight_modifier_multiplier: 6,
         weight_modifier_die: 12,
         weight_modifier_adj: 0,
-        base_size: String::from("medium"),
+        base_size: "medium".to_string(),
         alignments: {
             let mut alignments = HashMap::new();
-            alignments.insert(String::from("Lawful Good"), 30);
-            alignments.insert(String::from("Neutral Good"), 10);
-            alignments.insert(String::from("Chaotic Good"), 4);
-            alignments.insert(String::from("Lawful Neutral"), 4);
-            alignments.insert(String::from("True Neutral"), 4);
-            alignments.insert(String::from("Chaotic Neutral"), 10);
-            alignments.insert(String::from("Lawful Evil"), 4);
-            alignments.insert(String::from("Neutral Evil"), 4);
-            alignments.insert(String::from("Chaotic Evil"), 30);
+            alignments.insert("lawful good".to_string(), 30);
+            alignments.insert("neutral good".to_string(), 10);
+            alignments.insert("chaotic good".to_string(), 4);
+            alignments.insert("lawful neutral".to_string(), 4);
+            alignments.insert("true neutral".to_string(), 4);
+            alignments.insert("chaotic neutral".to_string(), 10);
+            alignments.insert("lawful evil".to_string(), 4);
+            alignments.insert("neutral evil".to_string(), 4);
+            alignments.insert("chaotic evil".to_string(), 30);
             alignments
         },
-        skin_tones: { vec! {skin_color} },
-        hair_colors: { vec! {String::from("none")} },
-        hair_types: { vec! {String::from("none")} },
-        eye_colors: {
+        skin_tones:  { vec! {skin_color} },
+        hair_colors: { vec! {"none".to_string()} },
+        hair_types:  { vec! {"none".to_string()} },
+        eye_colors:  {
             vec! {
-                String::from("Purple"),
-                String::from("Red"),
-                String::from("Orange"),
-                String::from("Yellow"),
-                String::from("Blue"),
-                String::from("Gray"),
-                String::from("Silver"),
-                String::from("Black")
+                "purple".to_string(),
+                "red".to_string(),
+                "orange".to_string(),
+                "yellow".to_string(),
+                "blue".to_string(),
+                "gray".to_string(),
+                "silver".to_string(),
+                "black".to_string()
             }
         },
-        source_material: { String::from("SRD") },
+        abilities: ancestry_abilities,
+        source_material: { "SRD".to_string() },
         source_credit_url: {
-            String::from("https://www.dndbeyond.com/attachments/39j2li89/SRD5.1-CCBY4.0_License_live%20links.pdf")
+            "https://www.dndbeyond.com/attachments/39j2li89/SRD5.1-CCBY4.0_License_live%20links.pdf".to_string()
         },
-        source_credit_comment: {String::from("As of 2023/03/25") }
+        source_credit_comment: {"As of 2023/03/25".to_string() }
     };
     let name= base_values.get_name();
     let parent_name = base_values.get_parent_name();
-    let age;
-    if prefs.age != -999 {
-        age = prefs.age.clone();
-    } else {
-        age = base_values.get_age();
-    }
     let base_size = base_values.get_base_size();
     let base_walking_speed = base_values.get_base_walking_speed();
-    let height;
-    if prefs.height != -999 {
-        height = prefs.height.clone();
-    } else {
-        height = base_values.get_height();
-    }
-    let weight;
-    if prefs.weight != -999 {
-        weight = prefs.weight.clone();
-    } else {
-        weight = base_values.get_weight();
-    }
 
-    let alignment;
-    if prefs.alignment != "None" {
-        alignment = prefs.alignment.clone();
-    } else {
-        alignment = base_values.get_alignment();
-    }
-    let skin_tone;
-    if prefs.skin_tone != "None" {
-        skin_tone = prefs.skin_tone.clone();
-    } else {
-        skin_tone = base_values.get_skin_tone();
-    }
-    let hair_color;
-    if prefs.hair_color != "None" {
-        hair_color = prefs.hair_color.clone();
-    } else {
-        hair_color = base_values.get_hair_color();
-    }
-    let hair_type;
-    if prefs.hair_type != "None" {
-        hair_type = prefs.hair_type.clone();
-    } else {
-        hair_type = base_values.get_hair_type();
-    }
-    let eye_color;
-    if prefs.eye_color != "None" {
-        eye_color = prefs.eye_color.clone();
-    } else {
-        eye_color = base_values.get_eye_color();
-    }
+    AncestralTraits::combiner(prefs, &base_values);
 
     AncestralTraits {
         name,
         parent_name,
-        age,
+        age: prefs.age,
         base_size,
         base_walking_speed,
-        height,
-        weight,
-        alignment,
-        skin_tone,
-        hair_color,
-        hair_type,
-        eye_color,
-        abilities: vec!{
-            CharacterAbility{
-                ability_name: String::from("breath weapon"),
-                category: String::from("offensive"),
-                specific_effect: vec! {resistance.clone()},
-                range: effect_range,
-                mechanic: vec!{
-                    String::from("1:2d6"),
-                    String::from("6:3d6"),
-                    String::from("11:4d6"),
-                    String::from("16:5d6")
-                },
-                availability: vec!{
-                    String::from("short rest"),
-                    String::from("long rest")
-                }
-            },
-            CharacterAbility{
-                ability_name: String::from("damage resistance"),
-                category: String::from("resistance"),
-                specific_effect: vec! {resistance.clone()},
-                range: vec!{String::from("all")},
-                mechanic: vec!{String::from("half damage")},
-                availability: vec!{String::from("always")}
-            },
-            CharacterAbility{
-                ability_name: String::from("ancestral language"),
-                category: String::from("language"),
-                specific_effect: vec!{
-                    String::from("common"),
-                    String::from("draconic")},
-                range: vec!{
-                    String::from("speak"),
-                    String::from("read"),
-                    String::from("write")},
-                mechanic: vec!{String::from("none")},
-                availability: vec!{String::from("always")}
-            },
-            CharacterAbility{
-                ability_name: String::from("dragon lore"),
-                category: String::from("checks"),
-                specific_effect: vec!{
-                    String::from("intelligence"),
-                    String::from("specific to dragons")
-                },
-                range: vec!{String::from("none")},
-                mechanic: vec!{String::from("advantage")},
-                availability: vec!{String::from("always")}
-            },
-        },
+        height: prefs.height,
+        weight: prefs.weight,
+        alignment: prefs.alignment.clone(),
+        skin_tone: prefs.skin_tone.clone(),
+        hair_color: prefs.hair_color.clone(),
+        hair_type: prefs.hair_type.clone(),
+        eye_color: prefs.eye_color.clone(),
+        abilities: base_values.abilities,
         source_material: base_values.source_material,
         source_credit_url: base_values.source_credit_url,
         source_credit_comment: base_values.source_credit_comment,
     }
 }
 
+/*
+Cultural Traits
+Dragonborn culture is intense and exciting, leading those raised within it to be striking and
+remarkable individuals. Grand festivals and elaborate holidays are frequent, each centered around
+a different physical competition or performance.
+
+In general, practices in dragonborn culture and education tend to promote athleticism and personal
+character.
+
+Ability Score Increase. Your Strength score increases by 2, and your Charisma score increases by 1.
+
+Alignment. Because dragonborn culture values intense commitments and expression, many raised in
+this culture find themselves drawn to one side or the other in the cosmic war between good and evil.
+Most dragonborn are good, but those who side with evil can be terrible villains.
+
+Languages. You can speak, read, and write Common and Draconic. Draconic is thought to be one of the
+oldest languages and is often used in the study of magic. The language sounds harsh to most other
+creatures and includes numerous hard consonants and sibilants.
+
+Dragon Lore. Dragonborn communities are often proud of their draconic heritage. You have advantage
+on any Intelligence checks to recall information about dragons.
+
+*/
+
+
 #[cfg(test)]
 mod tests {
     use crate::ancestry::AncestralTraits;
     use crate::character::CharacterPreferences;
-    // use super::*;
+
 
     #[test]
     fn test_black_dragonborn() {
-        let prefs = CharacterPreferences {
-            ancestry:  String::from("black dragonborn"),
+        let mut prefs = CharacterPreferences {
+            ancestry:  "black dragonborn".to_string(),
             ..CharacterPreferences::default()
         };
-        let db = AncestralTraits::new(&prefs);
-        assert_eq!(db.name, String::from("black dragonborn"));
-        assert_eq!(db.parent_name, String::from("dragonborn"));
+        let db = AncestralTraits::new(&mut prefs);
+        assert_eq!(db.name, "black dragonborn".to_string());
+        assert_eq!(db.parent_name, "dragonborn".to_string());
         assert!(db.age >= 15 && db.age <= 80, "Expected 15, got {}", db.age);
         assert_eq!(db.base_walking_speed, 30);
         assert!(db.height > 70 && db.height <=82, "Expected between 70..82, got {}", db.height);
-        assert!(db.weight > 180 && db.weight <=234, "Expected between 180..234, got {}", db.weight);
+        assert!(db.weight > 180 && db.weight <=250, "Expected between 180..250, got {}", db.weight);
         assert!(db.skin_tone.len() > 0, "Skin tone is empty" );
         assert!(db.hair_color.len() > 0, "Hair color is empty" );
         assert!(db.hair_type.len() > 0, "Hair type is empty" );
         assert!(db.eye_color.len() > 0, "Eye color is empty" );
-        let result = db.abilities.iter().any(|b| b.ability_name.contains(&String::from("damage resistance")));
-        assert_eq!(result, true);
+        // let result = db.abilities.iter().any(|b| b.ability_name.contains(&String::from("damage resistance")));
+        let result = db.abilities.get("resistances")
+            .and_then(|b| b.get("acid")).unwrap();
+
+        assert_eq!(result.ability_name, "damage resistance".to_string());
     }
     #[test]
     fn test_blue_dragonborn() {
-        let prefs = CharacterPreferences {
-            ancestry:  String::from("blue dragonborn"),
+        let mut prefs = CharacterPreferences {
+            ancestry:  "blue dragonborn".to_string(),
             ..CharacterPreferences::default()
         };
-        let db = AncestralTraits::new(&prefs);
-        assert_eq!(db.name, String::from("blue dragonborn"));
-        assert_eq!(db.parent_name, String::from("dragonborn"));
+        let db = AncestralTraits::new(&mut prefs);
+        assert_eq!(db.name, "blue dragonborn".to_string());
+        assert_eq!(db.parent_name, "dragonborn".to_string());
+        assert_eq!(db.abilities.len(), 4);
     }
     #[test]
     fn test_random_dragonborn() {
 
-        let prefs = CharacterPreferences {
-            ancestry:  String::from("dragonborn"),
+        let mut prefs = CharacterPreferences {
+            ancestry:  "dragonborn".to_string(),
             ..CharacterPreferences::default()
         };
-        let db = AncestralTraits::new(&prefs);
-        assert_eq!(db.parent_name, String::from("dragonborn"));
+        let db = AncestralTraits::new(&mut prefs);
+        assert_eq!(db.parent_name, "dragonborn".to_string());
         assert!(db.name.len() > 12, "Expecting anything with dragonborn: found {}", db.name);
     }
     #[test]
     fn test_default_ancestry() {
 
-        let prefs = CharacterPreferences {
-            ancestry:  String::from("bornfree"),
+        let mut prefs = CharacterPreferences {
+            ancestry:  "born free".to_string(),
             ..CharacterPreferences::default()
         };
-        let db = AncestralTraits::new(&prefs);
-        assert_eq!(db.parent_name, String::from("dragonborn"));
+        let db = AncestralTraits::new(&mut prefs);
+        assert_eq!(db.parent_name, "dragonborn".to_string());
         assert!(db.name.len() > 12, "Expecting anything with dragonborn: found {}", db.name);
     }
 
     #[test]
     fn test_all_ancestry_prefs() {
-        let prefs = CharacterPreferences {
-            name: String::from("chuck"),
-            ancestry: String::from("silver dragonborn"),
+        let mut prefs = CharacterPreferences {
+            name: "chuck".to_string(),
+            ancestry: "silver dragonborn".to_string(),
             age: 99,
             height: 92,
             weight: 275,
-            alignment: String::from("Chaotic Neutral"),
-            culture: String::from("dragonborn"),
-            skin_tone: String::from("silver"),
-            eye_color: String::from("black"),
-            hair_type: String::from("bald"),
-            hair_color: String::from("none"),
+            alignment: "chaotic neutral".to_string(),
+            culture: "dragonborn".to_string(),
+            skin_tone: "silver".to_string(),
+            eye_color: "black".to_string(),
+            hair_type: "bald".to_string(),
+            hair_color: "none".to_string(),
         };
-        let db = AncestralTraits::new(&prefs);
-        assert_eq!(db.name, String::from("silver dragonborn"));
-        assert_eq!(db.parent_name, String::from("dragonborn"));
+        let db = AncestralTraits::new(&mut prefs);
+        assert_eq!(db.name, "silver dragonborn".to_string());
+        assert_eq!(db.parent_name, "dragonborn".to_string());
         assert_eq!(db.age, 99);
         assert_eq!(db.base_walking_speed, 30);
         assert_eq!(db.height, 92);
         assert_eq!(db.weight, 275);
-        assert_eq!(db.base_size, String::from("medium"));
-        assert_eq!(db.alignment, String::from("Chaotic Neutral"));
-        assert_eq!(db.skin_tone, String::from("silver"));
-        assert_eq!(db.hair_color, String::from("none"));
-        assert_eq!(db.hair_type, String::from("bald"));
-        assert_eq!(db.eye_color, String::from("black"));
+        assert_eq!(db.base_size, "medium".to_string());
+        assert_eq!(db.alignment, "chaotic neutral".to_string());
+        assert_eq!(db.skin_tone, "silver".to_string());
+        assert_eq!(db.hair_color, "none".to_string());
+        assert_eq!(db.hair_type, "bald".to_string());
+        assert_eq!(db.eye_color, "black".to_string());
     }
 }

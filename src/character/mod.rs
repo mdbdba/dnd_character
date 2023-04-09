@@ -16,17 +16,17 @@ pub struct CharacterPreferences {
 impl Default for CharacterPreferences {
     fn default() -> Self {
         CharacterPreferences {
-            name: String::from("None"),
-            ancestry: String::from("None"),
-            culture: String::from("None"),
+            name: "None".to_string(),
+            ancestry: "None".to_string(),
+            culture: "None".to_string(),
             age: -999,
             height: -999,
             weight: -999,
-            alignment: String::from("None"), 
-            skin_tone: String::from("None"),
-            hair_color: String::from("None"),
-            hair_type: String::from("None"),
-            eye_color: String::from("None")
+            alignment: "None".to_string(),
+            skin_tone: "None".to_string(),
+            hair_color: "None".to_string(),
+            hair_type: "None".to_string(),
+            eye_color: "None".to_string()
         }
     }
 }

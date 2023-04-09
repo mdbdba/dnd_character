@@ -434,7 +434,7 @@ pub struct CharacterAbility {
 }
 
 #[derive(Clone)]
-struct BaseAncestralTraits {
+pub struct BaseAncestralTraits {
     name: String,
     parent_name: String,
     maturity_age: i16,
@@ -454,6 +454,7 @@ struct BaseAncestralTraits {
     hair_colors: Vec<String>,
     hair_types: Vec<String>,
     eye_colors: Vec<String>,
+    abilities: HashMap<String, HashMap<String, CharacterAbility>>,
     source_material: String,
     source_credit_url: String,
     source_credit_comment: String
@@ -496,9 +497,6 @@ pub fn get_parent_ancestry(src: String) -> String {
 
 impl BaseAncestralTraits {
     pub fn get_name(&self) -> String {
-        // if prefs.ancestry != String::from("None") {
-        //     return prefs.ancestry.clone()
-        // }
         self.name.clone()
     }
 
@@ -574,23 +572,50 @@ pub struct AncestralTraits {
     pub hair_color: String,
     pub hair_type: String,
     pub eye_color: String,
-    pub abilities: Vec<CharacterAbility>,
+    pub abilities: HashMap<String, HashMap<String, CharacterAbility>>,
     pub source_material: String,
     pub source_credit_url: String,
     pub source_credit_comment: String,
 }
 
 impl AncestralTraits {
-    pub fn new(prefs: &CharacterPreferences) -> AncestralTraits {
+    pub fn new(prefs: &mut CharacterPreferences) -> AncestralTraits {
         let name = prefs.ancestry.clone();
-        // let ancestry_name = &name[..];
+
         let anc = get_parent_ancestry(name);
         let ancestry_name = &anc[..];
 
         return match ancestry_name {
-            "dragonborn"  => new_dragonborn(&prefs),
-            _ => new_dragonborn(&prefs),
+            "dragonborn" => new_dragonborn(prefs),
+            _ => new_dragonborn(prefs),
         }
+    }
+    fn combiner(prefs: &mut CharacterPreferences, base_values: &BaseAncestralTraits) {
+        if prefs.age == -999 {
+            prefs.age = base_values.get_age();
+        }
+        if prefs.height == -999 {
+            prefs.height = base_values.get_height();
+        }
+        if prefs.weight == -999 {
+            prefs.weight = base_values.get_weight();
+        }
+        if prefs.alignment == "None" {
+            prefs.alignment = base_values.get_alignment();
+        }
+        if prefs.skin_tone == "None" {
+            prefs.skin_tone = base_values.get_skin_tone();
+        }
+        if prefs.hair_color == "None" {
+            prefs.hair_color = base_values.get_hair_color();
+        }
+        if prefs.hair_type == "None" {
+            prefs.hair_type = base_values.get_hair_type();
+        }
+        if prefs.eye_color == "None" {
+            prefs.eye_color = base_values.get_eye_color();
+        }
+
     }
 }
 
