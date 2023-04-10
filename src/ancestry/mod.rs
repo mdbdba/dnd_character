@@ -417,7 +417,7 @@ use std::clone::Clone;
 use std::collections::HashMap;
 use rand::prelude::{SliceRandom};
 use rand::Rng;
-use crate::ancestry::dragonborn::{new_dragonborn};
+use crate::ancestry::dragonborn::{new_dragonborn_ancestry, new_dragonborn_culture};
 use crate::modifier::Modifier;
 use crate::roll::roll_die;
 use crate::character::CharacterPreferences;
@@ -449,7 +449,6 @@ pub struct BaseAncestralTraits {
     weight_modifier_die: i16,
     weight_modifier_adj: i16,
     base_size: String,
-    alignments: HashMap<String, i16>,
     skin_tones: Vec<String>,
     hair_colors: Vec<String>,
     hair_types: Vec<String>,
@@ -520,6 +519,7 @@ impl BaseAncestralTraits {
                  Modifier::None,
                  self.weight_min_pounds + self.weight_modifier_adj).get_total().clone()
     }
+    /*
     fn get_alignment(&self) -> String {
         let mut rng = rand::thread_rng();
         let mut sum = 0;
@@ -533,8 +533,10 @@ impl BaseAncestralTraits {
             }
             sum += chance;
         }
-        String::from("True Neutral")
+        String::from("true neutral")
     }
+
+     */
     fn get_base_walking_speed(&self) -> i16 {
         self.base_walking_speed.clone()
     }
@@ -567,7 +569,6 @@ pub struct AncestralTraits {
     pub height: i16,
     pub weight: i16,
     pub base_size: String,
-    pub alignment: String,
     pub skin_tone: String,
     pub hair_color: String,
     pub hair_type: String,
@@ -586,51 +587,127 @@ impl AncestralTraits {
         let ancestry_name = &anc[..];
 
         return match ancestry_name {
-            "dragonborn" => new_dragonborn(prefs),
-            _ => new_dragonborn(prefs),
+            "dragonborn" => new_dragonborn_ancestry(prefs),
+            _ => new_dragonborn_ancestry(prefs),
         }
     }
     fn combiner(prefs: &mut CharacterPreferences, base_values: &BaseAncestralTraits) {
-        if prefs.age == -999 {
+        if prefs.age != -999 {
+            if prefs.age < 1 || prefs.age > (base_values.avg_max_age +40) {
+                prefs.age = base_values.get_age();
+            }
+        } else {
             prefs.age = base_values.get_age();
         }
-        if prefs.height == -999 {
+        if prefs.height != -999 {
+            if prefs.height < base_values.height_min_inches ||
+                prefs.height > (base_values.height_min_inches +
+                    (base_values.height_modifier_multiplier * base_values.height_modifier_die) +12) {
+                prefs.height = base_values.get_height();
+            }
+        } else {
             prefs.height = base_values.get_height();
         }
-        if prefs.weight == -999 {
+        if prefs.weight != -999 {
+            if prefs.weight < 1 || prefs.weight > (base_values.weight_min_pounds +
+                (base_values.weight_modifier_multiplier * base_values.weight_modifier_die) + 50) {
+                prefs.weight = base_values.get_weight();
+            }
+        } else {
             prefs.weight = base_values.get_weight();
         }
-        if prefs.alignment == "None" {
+        /*
+        if prefs.alignment != "None" {
+            let target: String;
+            target = match prefs.alignment.to_lowercase().as_str() {
+                "lawful good"  => "lawful good".to_string(),
+                "good" | "neutral good" => "neutral good".to_string(),
+                "chaotic good" => "chaotic good".to_string(),
+                "lawful neutral" => "lawful neutral".to_string(),
+                "neutral" | "neutral neutral" |"true neutral" => "true neutral".to_string(),
+                "chaotic neutral" => "chaotic neutral".to_string(),
+                "lawful evil" => "lawful evil".to_string(),
+                "evil" | "neutral evil" => "neutral evil".to_string(),
+                "chaotic evil" => "chaotic evil".to_string(),
+                _              => base_values.get_alignment()
+            };
+            prefs.alignment = target;
+        } else {
             prefs.alignment = base_values.get_alignment();
         }
-        if prefs.skin_tone == "None" {
+
+         */
+
+        if prefs.skin_tone != "None" {
+            prefs.skin_tone = prefs.skin_tone.to_lowercase();
+        } else {
             prefs.skin_tone = base_values.get_skin_tone();
         }
-        if prefs.hair_color == "None" {
+        if prefs.hair_color != "None" {
+            prefs.hair_color = prefs.hair_color.to_lowercase();
+        } else {
             prefs.hair_color = base_values.get_hair_color();
         }
-        if prefs.hair_type == "None" {
+        if prefs.hair_type != "None" {
+            prefs.hair_type = prefs.hair_type.to_lowercase();
+        } else {
             prefs.hair_type = base_values.get_hair_type();
         }
-        if prefs.eye_color == "None" {
+        if prefs.eye_color != "None" {
+            prefs.eye_color = prefs.eye_color.to_lowercase();
+        } else {
             prefs.eye_color = base_values.get_eye_color();
         }
+    }
+}
 
+pub struct BaseCulturalTraits {
+    pub alignments: HashMap<String, i16>,
+    pub ability_bonuses: HashMap<String, i8>,
+    pub abilities: HashMap<String, HashMap<String, CharacterAbility>>,
+}
+impl BaseCulturalTraits {
+    fn get_alignment(&self) -> String {
+        let mut rng = rand::thread_rng();
+        let mut sum = 0;
+        for (_, chance) in &self.alignments {
+            sum += chance;
+        }
+        let random_num = rng.gen_range(1..101);
+        for (name, chance) in &self.alignments {
+            if random_num <= chance + sum {
+                return name.clone();
+            }
+            sum += chance;
+        }
+        String::from("true neutral")
+    }
+}
+
+pub struct CulturalTraits {
+    pub name: String,
+    pub parent_name: String,
+    pub alignment: String,
+    pub ability_bonuses: HashMap<String, i8>,
+    pub abilities: HashMap<String, HashMap<String, CharacterAbility>>,
+    pub source_material: String,
+    pub source_credit_url: String,
+    pub source_credit_comment: String,
+}
+impl CulturalTraits {
+    pub fn new(prefs: &mut CharacterPreferences) -> CulturalTraits {
+
+        let cul = get_parent_ancestry(prefs.ancestry.clone());
+        let culture_name = &cul[..];
+
+        return match culture_name {
+            "dragonborn" => new_dragonborn_culture(prefs),
+            _ => new_dragonborn_culture(prefs),
+        }
     }
 }
 
 /*
-struct CulturalTraits {
-    name: &'static str,
-    parent_name: &'static str,
-    source_material: String,
-    source_credit_url: String,
-    source_credit_comment: String,
-    languages: Vec<String>,
-    ability_bonuses: HashMap<String, i8>,
-    abilities: Vec<CharacterAbility>,
-}
-
 trait Culture {
     fn name(&self) -> &'static str;
     fn parent_name(&self) -> &'static str;
@@ -640,9 +717,9 @@ trait Culture {
     fn languages(&self) -> Vec<String>;
     fn ability_bonuses(&self) -> HashMap<String, i8>;
     fn abilities(&self) -> Vec<CharacterAbility>;
+    }
+ */
 
-}
-*/
 
 
 /*

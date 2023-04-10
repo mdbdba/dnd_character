@@ -51,7 +51,7 @@ use std::collections::HashMap;
 use rand::distributions::Standard;
 use rand::prelude::Distribution;
 use rand::Rng;
-use crate::ancestry::{AncestralTraits, BaseAncestralTraits, CharacterAbility};
+use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits};
 use crate::character::CharacterPreferences;
 
 #[derive(Debug)]
@@ -85,8 +85,30 @@ impl Distribution<DragonbornColor> for Standard {
     }
 }
 
-pub fn new_dragonborn(prefs: &mut CharacterPreferences) -> AncestralTraits {
+fn confirm_dragonborn_color(src: String) -> DragonbornColor {
+
+    return match src.as_str() {
+        "black dragonborn"  => DragonbornColor::Black ,
+        "blue dragonborn"   => DragonbornColor::Blue ,
+        "brass dragonborn"  => DragonbornColor::Brass ,
+        "bronze dragonborn" => DragonbornColor::Bronze ,
+        "copper dragonborn" => DragonbornColor::Copper ,
+        "gold dragonborn"   => DragonbornColor::Gold ,
+        "green dragonborn"  => DragonbornColor::Green ,
+        "red dragonborn"    => DragonbornColor::Red,
+        "silver dragonborn" => DragonbornColor::Silver ,
+        "white dragonborn"  => DragonbornColor::White ,
+        _ => {
+            let color: DragonbornColor = rand::random();
+            color
+        },
+    }
+}
+
+pub fn new_dragonborn_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits {
     let parent_name = "dragonborn".to_string();
+    let color = confirm_dragonborn_color(prefs.ancestry.clone());
+    /*
     let ans_string = prefs.ancestry.clone();
     let ans = &ans_string[..];
 
@@ -106,7 +128,7 @@ pub fn new_dragonborn(prefs: &mut CharacterPreferences) -> AncestralTraits {
             color
         },
     };
-
+*/
 
     let skin_color: String;
     let resistance: String;
@@ -219,47 +241,6 @@ pub fn new_dragonborn(prefs: &mut CharacterPreferences) -> AncestralTraits {
     };
     resistances.insert(resistance.clone(), ability1);
 
-    let mut languages: HashMap<String, CharacterAbility> = HashMap::new();
-    let ability1 = CharacterAbility{
-            ability_name: "ancestral language".to_string(),
-            category: "language".to_string(),
-            specific_effect: vec!{"common".to_string()},
-            range: vec!{
-                "speak".to_string(),
-                "read".to_string(),
-                "write".to_string()},
-            mechanic: vec!{"none".to_string()},
-            availability: vec!{"always".to_string()}
-        };
-    let ability2 =  CharacterAbility{
-        ability_name: "ancestral language".to_string(),
-        category: "language".to_string(),
-        specific_effect: vec!{"draconic".to_string()},
-        range: vec!{
-            "speak".to_string(),
-            "read".to_string(),
-            "write".to_string()},
-        mechanic: vec!{"none".to_string()},
-        availability: vec!{"always".to_string()}
-    };
-    languages.insert("common".to_string(), ability1);
-    languages.insert("draconic".to_string(), ability2);
-
-
-    let mut checks: HashMap<String, CharacterAbility> = HashMap::new();
-    let ability1 = CharacterAbility{
-        ability_name: "dragon lore".to_string(),
-        category: "checks".to_string(),
-        specific_effect: vec!{
-            "intelligence".to_string(),
-            "specific to dragons".to_string()
-        },
-        range: vec!{"none".to_string()},
-        mechanic: vec!{"advantage".to_string()},
-        availability: vec!{"always".to_string()}
-    };
-    checks.insert("intelligence".to_string(), ability1);
-
     let mut offensive: HashMap<String, CharacterAbility> = HashMap::new();
     let ability1 = CharacterAbility{
         ability_name: "breath weapon".to_string(),
@@ -280,9 +261,7 @@ pub fn new_dragonborn(prefs: &mut CharacterPreferences) -> AncestralTraits {
     offensive.insert("breath weapon".to_string(), ability1);
 
     ancestry_abilities.insert("resistances".to_string(), resistances);
-    ancestry_abilities.insert("languages".to_string(), languages);
     ancestry_abilities.insert("offensive".to_string(), offensive);
-    ancestry_abilities.insert("checks".to_string(), checks);
 
     let base_values = BaseAncestralTraits {
         name: combined_name.clone(),
@@ -299,19 +278,6 @@ pub fn new_dragonborn(prefs: &mut CharacterPreferences) -> AncestralTraits {
         weight_modifier_die: 12,
         weight_modifier_adj: 0,
         base_size: "medium".to_string(),
-        alignments: {
-            let mut alignments = HashMap::new();
-            alignments.insert("lawful good".to_string(), 30);
-            alignments.insert("neutral good".to_string(), 10);
-            alignments.insert("chaotic good".to_string(), 4);
-            alignments.insert("lawful neutral".to_string(), 4);
-            alignments.insert("true neutral".to_string(), 4);
-            alignments.insert("chaotic neutral".to_string(), 10);
-            alignments.insert("lawful evil".to_string(), 4);
-            alignments.insert("neutral evil".to_string(), 4);
-            alignments.insert("chaotic evil".to_string(), 30);
-            alignments
-        },
         skin_tones:  { vec! {skin_color} },
         hair_colors: { vec! {"none".to_string()} },
         hair_types:  { vec! {"none".to_string()} },
@@ -349,7 +315,6 @@ pub fn new_dragonborn(prefs: &mut CharacterPreferences) -> AncestralTraits {
         base_walking_speed,
         height: prefs.height,
         weight: prefs.weight,
-        alignment: prefs.alignment.clone(),
         skin_tone: prefs.skin_tone.clone(),
         hair_color: prefs.hair_color.clone(),
         hair_type: prefs.hair_type.clone(),
@@ -385,15 +350,139 @@ on any Intelligence checks to recall information about dragons.
 
 */
 
+pub fn new_dragonborn_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
+
+    let bonuses: HashMap<String, i8> = [
+        ("strength".to_string(), 2),
+        ("dexterity".to_string(), 0),
+        ("constitution".to_string(), 0),
+        ("intelligence".to_string(), 0),
+        ("wisdom".to_string(), 0),
+        ("charisma".to_string(), 1),
+    ]
+        .iter()
+        .cloned()
+        .collect();
+
+    let parent_name = "dragonborn".to_string();
+    let color = confirm_dragonborn_color(prefs.ancestry.clone());
+    let combined_name = format!("{:?} {}", color, parent_name.clone()).to_lowercase();
+    let mut cultural_abilities: HashMap<String, HashMap<String, CharacterAbility>> = HashMap::new();
+
+    let mut languages: HashMap<String, CharacterAbility> = HashMap::new();
+    let ability1 = CharacterAbility{
+        ability_name: "ancestral language".to_string(),
+        category: "language".to_string(),
+        specific_effect: vec!{"common".to_string()},
+        range: vec!{
+            "speak".to_string(),
+            "read".to_string(),
+            "write".to_string()},
+        mechanic: vec!{"none".to_string()},
+        availability: vec!{"always".to_string()}
+    };
+    let ability2 =  CharacterAbility{
+        ability_name: "ancestral language".to_string(),
+        category: "language".to_string(),
+        specific_effect: vec!{"draconic".to_string()},
+        range: vec!{
+            "speak".to_string(),
+            "read".to_string(),
+            "write".to_string()},
+        mechanic: vec!{"none".to_string()},
+        availability: vec!{"always".to_string()}
+    };
+    languages.insert("common".to_string(), ability1);
+    languages.insert("draconic".to_string(), ability2);
+
+
+    let mut checks: HashMap<String, CharacterAbility> = HashMap::new();
+    let ability1 = CharacterAbility{
+        ability_name: "dragon lore".to_string(),
+        category: "checks".to_string(),
+        specific_effect: vec!{
+            "intelligence".to_string(),
+            "specific to dragons".to_string()
+        },
+        range: vec!{"none".to_string()},
+        mechanic: vec!{"advantage".to_string()},
+        availability: vec!{"always".to_string()}
+    };
+    checks.insert("intelligence".to_string(), ability1);
+
+
+    cultural_abilities.insert("languages".to_string(), languages);
+    cultural_abilities.insert("checks".to_string(), checks);
+
+    let base_values = BaseCulturalTraits {
+        alignments: {
+            let mut alignments = HashMap::new();
+            alignments.insert("lawful good".to_string(), 30);
+            alignments.insert("neutral good".to_string(), 10);
+            alignments.insert("chaotic good".to_string(), 4);
+            alignments.insert("lawful neutral".to_string(), 4);
+            alignments.insert("true neutral".to_string(), 4);
+            alignments.insert("chaotic neutral".to_string(), 10);
+            alignments.insert("lawful evil".to_string(), 4);
+            alignments.insert("neutral evil".to_string(), 4);
+            alignments.insert("chaotic evil".to_string(), 30);
+            alignments
+        },
+        ability_bonuses: bonuses,
+        abilities: cultural_abilities,
+
+    };
+    if prefs.alignment != "None" {
+        prefs.alignment = match prefs.alignment.to_lowercase().as_str() {
+            "lawful good" => "lawful good".to_string(),
+            "neutral good" => "neutral good".to_string(),
+            "chaotic good" => "chaotic good".to_string(),
+            "lawful neutral" => "lawful neutral".to_string(),
+            "true neutral" => "true neutral".to_string(),
+            "chaotic neutral" => "chaotic neutral".to_string(),
+            "lawful evil" => "lawful evil".to_string(),
+            "neutral evil" => "neutral evil".to_string(),
+            "chaotic evil" => "chaotic evil".to_string(),
+            _ => base_values.get_alignment()
+        };
+    } else {
+        prefs.alignment = base_values.get_alignment();
+    }
+
+    CulturalTraits {
+        name: combined_name,
+        parent_name,
+        alignment: prefs.alignment.clone(),
+        ability_bonuses: [
+            ("strength".to_string(), 2),
+            ("dexterity".to_string(), 0),
+            ("constitution".to_string(), 0),
+            ("intelligence".to_string(), 0),
+            ("wisdom".to_string(), 0),
+            ("charisma".to_string(), 1),
+        ]
+            .iter()
+            .cloned()
+            .collect(),
+        abilities: base_values.abilities,
+        source_material: { "SRD".to_string() },
+        source_credit_url: {
+            "https://www.dndbeyond.com/attachments/39j2li89/SRD5.1-CCBY4.0_License_live%20links.pdf".to_string()
+        },
+        source_credit_comment: {"As of 2023/03/25".to_string() }
+    }
+
+}
+
 
 #[cfg(test)]
 mod tests {
-    use crate::ancestry::AncestralTraits;
+    use crate::ancestry::{AncestralTraits, CulturalTraits};
     use crate::character::CharacterPreferences;
 
 
     #[test]
-    fn test_black_dragonborn() {
+    fn test_black_dragonborn_ancestry() {
         let mut prefs = CharacterPreferences {
             ancestry:  "black dragonborn".to_string(),
             ..CharacterPreferences::default()
@@ -409,14 +498,13 @@ mod tests {
         assert!(db.hair_color.len() > 0, "Hair color is empty" );
         assert!(db.hair_type.len() > 0, "Hair type is empty" );
         assert!(db.eye_color.len() > 0, "Eye color is empty" );
-        // let result = db.abilities.iter().any(|b| b.ability_name.contains(&String::from("damage resistance")));
         let result = db.abilities.get("resistances")
             .and_then(|b| b.get("acid")).unwrap();
 
         assert_eq!(result.ability_name, "damage resistance".to_string());
     }
     #[test]
-    fn test_blue_dragonborn() {
+    fn test_blue_dragonborn_ancestry() {
         let mut prefs = CharacterPreferences {
             ancestry:  "blue dragonborn".to_string(),
             ..CharacterPreferences::default()
@@ -424,10 +512,10 @@ mod tests {
         let db = AncestralTraits::new(&mut prefs);
         assert_eq!(db.name, "blue dragonborn".to_string());
         assert_eq!(db.parent_name, "dragonborn".to_string());
-        assert_eq!(db.abilities.len(), 4);
+        assert_eq!(db.abilities.len(), 2);
     }
     #[test]
-    fn test_random_dragonborn() {
+    fn test_random_dragonborn_ancestry() {
 
         let mut prefs = CharacterPreferences {
             ancestry:  "dragonborn".to_string(),
@@ -472,10 +560,23 @@ mod tests {
         assert_eq!(db.height, 92);
         assert_eq!(db.weight, 275);
         assert_eq!(db.base_size, "medium".to_string());
-        assert_eq!(db.alignment, "chaotic neutral".to_string());
         assert_eq!(db.skin_tone, "silver".to_string());
         assert_eq!(db.hair_color, "none".to_string());
         assert_eq!(db.hair_type, "bald".to_string());
         assert_eq!(db.eye_color, "black".to_string());
+    }
+
+    #[test]
+    fn test_blue_dragonborn_culture() {
+        let mut prefs = CharacterPreferences {
+            ancestry:  "blue dragonborn".to_string(),
+            alignment: "chaotic neutral".to_string(),
+            ..CharacterPreferences::default()
+        };
+        let db = CulturalTraits::new(&mut prefs);
+        assert_eq!(db.name, "blue dragonborn".to_string());
+        assert_eq!(db.parent_name, "dragonborn".to_string());
+        assert_eq!(db.alignment, "chaotic neutral".to_string());
+        assert_eq!(db.abilities.len(), 2);
     }
 }
