@@ -412,6 +412,7 @@ alive and dynamic.
 */
 
 mod dragonborn;
+mod dwarf;
 
 use std::clone::Clone;
 use std::collections::HashMap;
@@ -519,46 +520,36 @@ impl BaseAncestralTraits {
                  Modifier::None,
                  self.weight_min_pounds + self.weight_modifier_adj).get_total().clone()
     }
-    /*
-    fn get_alignment(&self) -> String {
-        let mut rng = rand::thread_rng();
-        let mut sum = 0;
-        for (_, chance) in &self.alignments {
-            sum += chance;
-        }
-        let random_num = rng.gen_range(1..101);
-        for (name, chance) in &self.alignments {
-            if random_num <= chance + sum {
-                return name.clone();
-            }
-            sum += chance;
-        }
-        String::from("true neutral")
-    }
 
-     */
     fn get_base_walking_speed(&self) -> i16 {
         self.base_walking_speed.clone()
     }
     fn get_base_size(&self) -> String {
         self.base_size.clone()
     }
+    /*
     fn get_random_string(&self, strings: Vec<String>) -> String {
         let mut rng = rand::thread_rng();
         strings.choose(&mut rng).cloned().unwrap_or(String::from("Wonderful"))
     }
+     */
     fn get_skin_tone(&self) -> String {
-        self.get_random_string(self.skin_tones.clone())
+        get_random_string(self.skin_tones.clone(), "wonderful".to_string())
     }
     fn get_hair_color(&self) -> String {
-        self.get_random_string(self.hair_colors.clone())
+        get_random_string(self.hair_colors.clone(), "wonderful".to_string())
     }
     fn get_hair_type(&self) -> String {
-        self.get_random_string(self.hair_types.clone())
+        get_random_string(self.hair_types.clone(), "wonderful".to_string())
     }
     fn get_eye_color(&self) -> String {
-        self.get_random_string(self.eye_colors.clone())
+        get_random_string(self.eye_colors.clone(), "wonderful".to_string())
     }
+}
+
+pub fn get_random_string(strings: Vec<String>, default: String) -> String {
+    let mut rng = rand::thread_rng();
+    strings.choose(&mut rng).cloned().unwrap_or(default)
 }
 
 pub struct AncestralTraits {
@@ -616,27 +607,6 @@ impl AncestralTraits {
         } else {
             prefs.weight = base_values.get_weight();
         }
-        /*
-        if prefs.alignment != "None" {
-            let target: String;
-            target = match prefs.alignment.to_lowercase().as_str() {
-                "lawful good"  => "lawful good".to_string(),
-                "good" | "neutral good" => "neutral good".to_string(),
-                "chaotic good" => "chaotic good".to_string(),
-                "lawful neutral" => "lawful neutral".to_string(),
-                "neutral" | "neutral neutral" |"true neutral" => "true neutral".to_string(),
-                "chaotic neutral" => "chaotic neutral".to_string(),
-                "lawful evil" => "lawful evil".to_string(),
-                "evil" | "neutral evil" => "neutral evil".to_string(),
-                "chaotic evil" => "chaotic evil".to_string(),
-                _              => base_values.get_alignment()
-            };
-            prefs.alignment = target;
-        } else {
-            prefs.alignment = base_values.get_alignment();
-        }
-
-         */
 
         if prefs.skin_tone != "None" {
             prefs.skin_tone = prefs.skin_tone.to_lowercase();
@@ -682,6 +652,13 @@ impl BaseCulturalTraits {
         }
         String::from("true neutral")
     }
+
+    /*
+    fn get_random_string(&self, strings: Vec<String>) -> String {
+        let mut rng = rand::thread_rng();
+        strings.choose(&mut rng).cloned().unwrap_or(String::from("Wonderful"))
+    }
+     */
 }
 
 pub struct CulturalTraits {
@@ -707,175 +684,9 @@ impl CulturalTraits {
     }
 }
 
-/*
-trait Culture {
-    fn name(&self) -> &'static str;
-    fn parent_name(&self) -> &'static str;
-    fn source_material(&self) -> String;
-    fn source_credit_url(&self) -> String;
-    fn source_credit_comment(&self) -> String;
-    fn languages(&self) -> Vec<String>;
-    fn ability_bonuses(&self) -> HashMap<String, i8>;
-    fn abilities(&self) -> Vec<CharacterAbility>;
-    }
- */
-
 
 
 /*
-Dwarf
-The origins of dwarves are shrouded in myth, with some saying that their ancestors were fashioned
-from the very stone itself. Dwarven culture reflects this tradition, often celebrating practices
-related to the working of stone and metal.
-
-Contents [show]
-
-Ancestral Traits
-Your dwarf character has an assortment of inborn abilities, part and parcel of dwarven biology.
-
-Age. Dwarves mature at the same rate as humans, but they’re considered young until they reach the
-age of 50. On average, they live about 350 years.
-
-Size. Dwarves stand between 4 and 5 feet tall and average about 150 pounds. Your size is Medium.
-
-Speed. Your base walking speed is 25 feet. Your speed is not reduced by wearing heavy armor.
-
-Darkvision. Accustomed to life underground, you have superior vision in dark and dim conditions.
-You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if
-it were dim light. You can’t discern color in darkness, only shades of gray.
-
-Dwarven Resilience. You have advantage on saving throws against poison, and you have resistance
-against poison damage, most likely a feature of you ancestors’ diet.
-
-Dwarven Toughness. Your hit point maximum increases by 1, and it increases by 1 every time you
-gain a level, due in large part to the long history of difficult labor required to survive
-underground for generations.
-
-Cultural Traits
-Hill Dwarf
-Characters who grows up in a hill dwarven community take on several distinctive cultural traits,
-in part due to their long history living underground and valuing of skill with traditional dwarven
-weapons and crafts. Dwarven culture values perseverance in labor and the maintenance of their
-traditions. Further, respect is shown for their wise elders.
-
-Ability Score Increase. Your Constitution score increases by 2,
-and your Wisdom score increases by 1.
-
-Alignment. Dwarven society is well-ordered, with strict laws and customs governing behavior. As a
-result, the culture tends to promote lawful values, with a strong sense of fair play and a belief
-that everyone deserves to share in the benefits of a just order.
-
-Dwarven Combat Training. You have proficiency with the battleaxe, handaxe, light hammer,
-and warhammer.
-
-Tool Proficiency. You gain proficiency with the artisan’s tools of your choice: smith’s tools,
-brewer’s supplies, mechanic’s tools, or mason’s tools.
-
-Stonecunning. Whenever you make an Intelligence (History) check related to the origin of stonework,
-you are considered proficient in the History skill and add double your proficiency bonus to the
-check, instead of your normal proficiency bonus.
-
-Languages. You can speak, read, and write Common and Dwarvish. Dwarvish is full of hard consonants
-and guttural sounds, and those characteristics spill over into whatever other language you
-might speak.
-
-Deep Dwarf
-Source More Ancestries & Cultures, Copyright 2020, Arcanist Press LLP.
-
-In addition to the more common dwarf communities who live beneath the hills or on mountain tops,
-some dwarven communities delve deep into the subterranean reaches of the very foundations of the
-land. These deep dwarven communities develop their own distinctive culture and practices as a
-result of their exploratory practices. Indeed, they must work very hard to find sufficient food
-and resources for their communities to survive in such a dangerous environment.
-
-Ability Score Increase. Your Wisdom score increases by 2 and your Constitution by 1.
-
-Alignment. Deep dwarven society values resourcefulness, no matter the methods, accepting
-unconventional individuals readily if they benefit the community. As such, they tend toward
-chaotic values.
-
-Deep Dwarf Magic. Children are trained in special magical techniques that provide them the tools
-they need to survive and contribute to deep dwarven culture as adults. When you reach 3rd level,
-you can cast the expeditious retreat spell once. When you reach 5th level, you can cast the pass
-without trace spell once, without requiring material components. You regain the ability to cast
-these spells with this trait when you finish a long rest. Wisdom is your spellcasting ability for
-these spells.
-
-Deep Dwarven Survival Training. Everyone living in deep dwarven communities is expected to
-contribute to the community’s survival. You have proficiency in the Survival skill as well
-as with the light crossbow, shortsword, and javelin.
-
-Tunnel Sense. Deep dwarven communities often occupy complex networks of tunnels and rocky passages.
-Those who live in these communities long enough come to have a special facility with finding their
-way around underground. When moving in natural passages underground, you cannot become lost except
-through magical means. What’s more, you have developed an innate sense for whether you are
-descending, ascending, or traveling in a straight line when moving through such tunnels.
-
-Languages. You can speak, read, and write Common, Dwarvish, and Undercommon.
-
-Section 15: Copyright Notice
-More Ancestries & Cultures, Copyright 2020, Arcanist Press LLP.
-
-Rock Dwarf
-Source More Ancestries & Cultures, Copyright 2020, Arcanist Press LLP.
-
-In addition to the more common dwarf communities who live beneath the hills, some dwarven
-communities develop above ground, high in the mountains or deep within ravines. These rock
-dwarven communities develop their own distinctive culture and practices, emphasizing defense
-of their communities as an important value.
-
-Ability Score Increase. Your Strength score increases by 2 and your Constitution by 1.
-
-Alignment. Rock dwarven society has a martial focus, as their communities are often endangered by
-the fauna of the high mountains. As such, they tend toward law more often than not.
-
-Rock Dwarven Combat Training. You have proficiency with the mace, heavy crossbow, and warpick,
-as well as light and medium armor.
-
-Rock-wise. Whenever you make an Intelligence (Nature) check related to geology, such as rocks,
-mountains, or gems, you are considered proficient in the Nature skill and add double your
-proficiency bonus to the check, instead of your normal proficiency bonus.
-
-Languages. You can speak, read, and write Common and Dwarvish. Dwarvish is full of hard consonants
-and guttural sounds, and those characteristics spill over into whatever other language a
-dwarf might speak.
-
-Section 15: Copyright Notice
-More Ancestries & Cultures, Copyright 2020, Arcanist Press LLP.
-
-Sea Dwarf
-Source More Ancestries & Cultures, Copyright 2020, Arcanist Press LLP.
-
-In addition to the more common dwarf communities who live beneath the hills or on mountain tops,
-a few dwarven communities ply the open seas. In many cases, these communities reside on or within
-mountain islands that make up island chains and archipelagos, or even within the calderas of
-extinct oceanic volcanoes. For such communities, the sea becomes their primary means of transport,
-but also the source of much of their survival, as their small, rocky islands cannot produce enough
-food for them to at; thus, they take to the seas to fish.
-
-Sea dwarven communities respect the fickleness of the sea and it weather, while valuing the
-camaraderie of a ship’s crew. These experiences result in those who grow up in these communities
-developing certain traits.
-
-Ability Score Increase. Your Wisdom score increases by 2 and your Dexterity by 1.
-
-Alignment. Sea dwarven society values cooperation, mutual aid, and insight, both into the sea and
-sky, as well as each other. They tend away from chaos and evil.
-
-Born Sailors. Sea dwarven community members live much of their lives at sea. You have proficiency
-in Navigators Tools and Vehicles (Water).
-
-Sea-Wise. The young people in sea dwarven communities are taught the ways of the sea from an
-early age. Whenever you make an Intelligence (Nature) or Wisdom (Survival) check related to the
-sea, you are considered proficient in the skill and add double your proficiency bonus to the check,
-instead of your normal proficiency bonus.
-
-Sea Dwarven Defense. Everyone living in sea dwarven communities is expected to protect the ships
-from pirates and worse. You have proficiency in the Survival skill heavy crossbow, shortsword,
-and net.
-
-Languages. You can speak, read, and write Common and Dwarvish.
-
 
 Elf
 A legend among elven communities describes how the first elves sprang from the dripping blood of

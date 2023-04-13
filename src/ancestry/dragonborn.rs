@@ -108,27 +108,6 @@ fn confirm_dragonborn_color(src: String) -> DragonbornColor {
 pub fn new_dragonborn_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits {
     let parent_name = "dragonborn".to_string();
     let color = confirm_dragonborn_color(prefs.ancestry.clone());
-    /*
-    let ans_string = prefs.ancestry.clone();
-    let ans = &ans_string[..];
-
-    let color = match ans {
-        "black dragonborn"  => DragonbornColor::Black ,
-        "blue dragonborn"   => DragonbornColor::Blue ,
-        "brass dragonborn"  => DragonbornColor::Brass ,
-        "bronze dragonborn" => DragonbornColor::Bronze ,
-        "copper dragonborn" => DragonbornColor::Copper ,
-        "gold dragonborn"   => DragonbornColor::Gold ,
-        "green dragonborn"  => DragonbornColor::Green ,
-        "red dragonborn"    => DragonbornColor::Red,
-        "silver dragonborn" => DragonbornColor::Silver ,
-        "white dragonborn"  => DragonbornColor::White ,
-        _ => {
-            let color: DragonbornColor = rand::random();
-            color
-        },
-    };
-*/
 
     let skin_color: String;
     let resistance: String;
@@ -352,18 +331,6 @@ on any Intelligence checks to recall information about dragons.
 
 pub fn new_dragonborn_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
 
-    let bonuses: HashMap<String, i8> = [
-        ("strength".to_string(), 2),
-        ("dexterity".to_string(), 0),
-        ("constitution".to_string(), 0),
-        ("intelligence".to_string(), 0),
-        ("wisdom".to_string(), 0),
-        ("charisma".to_string(), 1),
-    ]
-        .iter()
-        .cloned()
-        .collect();
-
     let parent_name = "dragonborn".to_string();
     let color = confirm_dragonborn_color(prefs.ancestry.clone());
     let combined_name = format!("{:?} {}", color, parent_name.clone()).to_lowercase();
@@ -428,7 +395,17 @@ pub fn new_dragonborn_culture(prefs: &mut CharacterPreferences) -> CulturalTrait
             alignments.insert("chaotic evil".to_string(), 30);
             alignments
         },
-        ability_bonuses: bonuses,
+        ability_bonuses: [
+            ("strength".to_string(), 2),
+            ("dexterity".to_string(), 0),
+            ("constitution".to_string(), 0),
+            ("intelligence".to_string(), 0),
+            ("wisdom".to_string(), 0),
+            ("charisma".to_string(), 1),
+        ]
+            .iter()
+            .cloned()
+            .collect(),
         abilities: cultural_abilities,
 
     };
@@ -453,17 +430,7 @@ pub fn new_dragonborn_culture(prefs: &mut CharacterPreferences) -> CulturalTrait
         name: combined_name,
         parent_name,
         alignment: prefs.alignment.clone(),
-        ability_bonuses: [
-            ("strength".to_string(), 2),
-            ("dexterity".to_string(), 0),
-            ("constitution".to_string(), 0),
-            ("intelligence".to_string(), 0),
-            ("wisdom".to_string(), 0),
-            ("charisma".to_string(), 1),
-        ]
-            .iter()
-            .cloned()
-            .collect(),
+        ability_bonuses: base_values.ability_bonuses,
         abilities: base_values.abilities,
         source_material: { "SRD".to_string() },
         source_credit_url: {
