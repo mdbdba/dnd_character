@@ -518,6 +518,7 @@ mod tests {
             eye_color: "black".to_string(),
             hair_type: "bald".to_string(),
             hair_color: "none".to_string(),
+            abilities: None,
         };
         let db = AncestralTraits::new(&mut prefs);
         assert_eq!(db.name, "silver dragonborn".to_string());

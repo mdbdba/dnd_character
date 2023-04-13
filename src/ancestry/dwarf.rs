@@ -398,3 +398,71 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
     }
 
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::ancestry::{AncestralTraits, CulturalTraits};
+    use crate::character::CharacterPreferences;
+
+
+    #[test]
+    fn test_hill_dwarf_ancestry() {
+        let mut prefs = CharacterPreferences {
+            ancestry: "hill dwarf".to_string(),
+            ..CharacterPreferences::default()
+        };
+        let db = AncestralTraits::new(&mut prefs);
+        assert_eq!(db.name, "hill dwarf".to_string());
+        assert_eq!(db.parent_name, "dwarf".to_string());
+        assert!(db.age >= 50 && db.age <= 400, "Expected 50..400, got {}", db.age);
+        assert_eq!(db.base_walking_speed, 25);
+        assert!(db.height > 48 && db.height <= 60, "Expected 48..60, got {}", db.height);
+        assert!(db.weight > 138 && db.weight <= 182, "Expected 138..182, got {}", db.weight);
+        assert!(db.skin_tone.len() > 0, "Skin tone is empty");
+        assert!(db.hair_color.len() > 0, "Hair color is empty");
+        assert!(db.hair_type.len() > 0, "Hair type is empty");
+        assert!(db.eye_color.len() > 0, "Eye color is empty");
+        let result = db.abilities.get("resistances")
+            .and_then(|b| b.get("poison")).unwrap();
+
+        assert_eq!(result.ability_name, "damage resistance".to_string());
+    }
+}
+/*
+
+        base_walking_speed: 25,
+        height_min_inches: 48,
+        height_modifier_multiplier: 2,
+        height_modifier_die: 6,
+        height_modifier_adj: 0,
+        weight_min_pounds: 134,
+        weight_modifier_multiplier: 4,
+        weight_modifier_die: 12,
+        weight_modifier_adj: 0,
+        base_size: "medium".to_string(),
+        skin_tones: vec! {
+            "tan".to_string(),
+            "brown".to_string(),
+            "beige".to_string(),
+            "black".to_string()
+        },
+        hair_colors: vec! {
+            "black".to_string(),
+            "brown".to_string(),
+            "auburn".to_string(),
+            "red".to_string(),
+            "grey".to_string()
+        },
+        hair_types: vec! {
+            "curly".to_string(),
+            "wavy".to_string(),
+            "straight".to_string(),
+        },
+        eye_colors: vec! {
+            "brown".to_string(),
+            "black".to_string(),
+            "grey".to_string(),
+            "green".to_string(),
+            "bloodshot".to_string()
+        },
+ */

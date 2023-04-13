@@ -419,6 +419,7 @@ use std::collections::HashMap;
 use rand::prelude::{SliceRandom};
 use rand::Rng;
 use crate::ancestry::dragonborn::{new_dragonborn_ancestry, new_dragonborn_culture};
+use crate::ancestry::dwarf::{new_dwarven_ancestry, new_dwarven_culture};
 use crate::modifier::Modifier;
 use crate::roll::roll_die;
 use crate::character::CharacterPreferences;
@@ -579,6 +580,7 @@ impl AncestralTraits {
 
         return match ancestry_name {
             "dragonborn" => new_dragonborn_ancestry(prefs),
+            "dwarf" => new_dwarven_ancestry(prefs),
             _ => new_dragonborn_ancestry(prefs),
         }
     }
@@ -679,6 +681,7 @@ impl CulturalTraits {
 
         return match culture_name {
             "dragonborn" => new_dragonborn_culture(prefs),
+            "dwarf" => new_dwarven_culture(prefs),
             _ => new_dragonborn_culture(prefs),
         }
     }

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+use crate::ancestry::CharacterAbility;
 
 pub struct CharacterPreferences {
     pub name: String,
@@ -10,7 +12,8 @@ pub struct CharacterPreferences {
     pub skin_tone: String,
     pub hair_color: String,
     pub hair_type: String,
-    pub eye_color: String
+    pub eye_color: String,
+    pub abilities: Option<HashMap<String, HashMap<String, CharacterAbility>>>,
 }
 
 impl Default for CharacterPreferences {
@@ -26,7 +29,8 @@ impl Default for CharacterPreferences {
             skin_tone: "None".to_string(),
             hair_color: "None".to_string(),
             hair_type: "None".to_string(),
-            eye_color: "None".to_string()
+            eye_color: "None".to_string(),
+            abilities: None,
         }
     }
 }
