@@ -33,7 +33,7 @@ use std::collections::HashMap;
 use rand::distributions::Standard;
 use rand::prelude::Distribution;
 use rand::Rng;
-use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, get_random_string};
+use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, get_random_string, set_ability_bonuses, set_alignments};
 use crate::character::CharacterPreferences;
 
 #[derive(Debug)]
@@ -241,7 +241,7 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
     let mut cultural_abilities: HashMap<String, HashMap<String, CharacterAbility>> = HashMap::new();
 
     let mut languages: HashMap<String, CharacterAbility> = HashMap::new();
-    let ability1 = CharacterAbility{
+    languages.insert("common".to_string(), CharacterAbility{
         ability_name: "ancestral language".to_string(),
         category: "language".to_string(),
         specific_effect: vec!{"common".to_string()},
@@ -251,8 +251,9 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
             "write".to_string()},
         mechanic: vec!{"none".to_string()},
         availability: vec!{"always".to_string()}
-    };
-    let ability2 =  CharacterAbility{
+    });
+
+    languages.insert("dwarvish".to_string(), CharacterAbility{
         ability_name: "ancestral language".to_string(),
         category: "language".to_string(),
         specific_effect: vec!{"dwarvish".to_string()},
@@ -262,9 +263,7 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
             "write".to_string()},
         mechanic: vec!{"none".to_string()},
         availability: vec!{"always".to_string()}
-    };
-    languages.insert("common".to_string(), ability1);
-    languages.insert("dwarvish".to_string(), ability2);
+    });
 
     /*
     Dwarven Combat Training. You have proficiency with the battleaxe, handaxe, light hammer,
@@ -275,108 +274,77 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
      */
 
     let mut proficiencies: HashMap<String, CharacterAbility> = HashMap::new();
-    let ability1 = CharacterAbility{
+    proficiencies.insert("battleaxe".to_string(), CharacterAbility{
         ability_name: "dwarven combat training".to_string(),
         category: "proficiencies".to_string(),
         specific_effect: vec!{"weapon".to_string()},
         range: vec!{"all".to_string()},
-        mechanic: vec!{
-            "battleaxe".to_string(),
-        },
+        mechanic: vec!{"battleaxe".to_string()},
         availability: vec!{"always".to_string()}
-    };
-    proficiencies.insert("battleaxe".to_string(), ability1);
+    });
 
-    let ability2 = CharacterAbility{
+    proficiencies.insert("handaxe".to_string(),  CharacterAbility{
         ability_name: "dwarven combat training".to_string(),
         category: "proficiencies".to_string(),
         specific_effect: vec!{"weapon".to_string()},
         range: vec!{"all".to_string()},
-        mechanic: vec!{
-            "handaxe".to_string(),
-        },
+        mechanic: vec!{"handaxe".to_string()},
         availability: vec!{"always".to_string()}
-    };
-    proficiencies.insert("handaxe".to_string(), ability2);
+    });
 
-    let ability3 = CharacterAbility{
+    proficiencies.insert("light hammer".to_string(), CharacterAbility{
         ability_name: "dwarven combat training".to_string(),
         category: "proficiencies".to_string(),
         specific_effect: vec!{"weapon".to_string()},
         range: vec!{"all".to_string()},
-        mechanic: vec!{
-            "light hammer".to_string(),
-        },
+        mechanic: vec!{"light hammer".to_string()},
         availability: vec!{"always".to_string()}
-    };
-    proficiencies.insert("light hammer".to_string(), ability3);
+    });
 
-    let ability4 = CharacterAbility{
+    proficiencies.insert("war hammer".to_string(), CharacterAbility{
         ability_name: "dwarven combat training".to_string(),
         category: "proficiencies".to_string(),
         specific_effect: vec!{"weapon".to_string()},
         range: vec!{"all".to_string()},
         mechanic: vec!{"war hammer".to_string()},
         availability: vec!{"always".to_string()}
-    };
-    proficiencies.insert("war hammer".to_string(), ability4);
+    });
+
     let tool_proficiency = get_random_string(vec!{
         "smith’s tools".to_string(),
         "brewer’s supplies".to_string(),
         "mechanic’s tools".to_string(),
         "mason’s tools".to_string()}, "smith's tools".to_string());
 
-    let ability5 = CharacterAbility{
+    proficiencies.insert(tool_proficiency.clone(),  CharacterAbility{
         ability_name: "tool proficiency".to_string(),
         category: "proficiencies".to_string(),
         specific_effect: vec!{"tool".to_string()},
         range: vec!{"all".to_string()},
         mechanic: vec!{tool_proficiency.clone()},
         availability: vec!{"always".to_string()}
-    };
-    proficiencies.insert(tool_proficiency, ability5);
+    });
 
     cultural_abilities.insert("languages".to_string(), languages);
     cultural_abilities.insert("proficiencies".to_string(), proficiencies);
 
     let base_values = BaseCulturalTraits {
-        alignments: {
-            let mut alignments = HashMap::new();
-            alignments.insert("lawful good".to_string(), 45);
-            alignments.insert("neutral good".to_string(), 5);
-            alignments.insert("chaotic good".to_string(), 5);
-            alignments.insert("lawful neutral".to_string(), 15);
-            alignments.insert("true neutral".to_string(), 5);
-            alignments.insert("chaotic neutral".to_string(), 5);
-            alignments.insert("lawful evil".to_string(), 10);
-            alignments.insert("neutral evil".to_string(), 5);
-            alignments.insert("chaotic evil".to_string(), 5);
-            alignments
-        },
-        ability_bonuses: [
-            ("strength".to_string(), 0),
-            ("dexterity".to_string(), 0),
-            ("constitution".to_string(), 2),
-            ("intelligence".to_string(), 0),
-            ("wisdom".to_string(), 1),
-            ("charisma".to_string(), 1),
-        ]
-            .iter()
-            .cloned()
-            .collect(),
+        alignments: set_alignments(45,5,5,15,5,5,10,5,5),
+
+        ability_bonuses: set_ability_bonuses(0,0,2,0,1,0),
         abilities: cultural_abilities,
 
     };
     if prefs.alignment != "None" {
         prefs.alignment = match prefs.alignment.to_lowercase().as_str() {
             "lawful good" => "lawful good".to_string(),
-            "neutral good" => "neutral good".to_string(),
+            "good"|"neutral good" => "neutral good".to_string(),
             "chaotic good" => "chaotic good".to_string(),
             "lawful neutral" => "lawful neutral".to_string(),
-            "true neutral" => "true neutral".to_string(),
+            "neutral neutral"|"neutral"|"true neutral" => "true neutral".to_string(),
             "chaotic neutral" => "chaotic neutral".to_string(),
             "lawful evil" => "lawful evil".to_string(),
-            "neutral evil" => "neutral evil".to_string(),
+            "evil"|"neutral evil" => "neutral evil".to_string(),
             "chaotic evil" => "chaotic evil".to_string(),
             _ => base_values.get_alignment()
         };
@@ -396,7 +364,6 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
         },
         source_credit_comment: {"As of 2023/03/25".to_string() }
     }
-
 }
 
 #[cfg(test)]
@@ -427,42 +394,18 @@ mod tests {
 
         assert_eq!(result.ability_name, "damage resistance".to_string());
     }
-}
-/*
 
-        base_walking_speed: 25,
-        height_min_inches: 48,
-        height_modifier_multiplier: 2,
-        height_modifier_die: 6,
-        height_modifier_adj: 0,
-        weight_min_pounds: 134,
-        weight_modifier_multiplier: 4,
-        weight_modifier_die: 12,
-        weight_modifier_adj: 0,
-        base_size: "medium".to_string(),
-        skin_tones: vec! {
-            "tan".to_string(),
-            "brown".to_string(),
-            "beige".to_string(),
-            "black".to_string()
-        },
-        hair_colors: vec! {
-            "black".to_string(),
-            "brown".to_string(),
-            "auburn".to_string(),
-            "red".to_string(),
-            "grey".to_string()
-        },
-        hair_types: vec! {
-            "curly".to_string(),
-            "wavy".to_string(),
-            "straight".to_string(),
-        },
-        eye_colors: vec! {
-            "brown".to_string(),
-            "black".to_string(),
-            "grey".to_string(),
-            "green".to_string(),
-            "bloodshot".to_string()
-        },
- */
+    #[test]
+    fn test_hill_dwarf_culture() {
+        let mut prefs = CharacterPreferences {
+            ancestry:  "hill dwarf".to_string(),
+            alignment: "chaotic neutral".to_string(),
+            ..CharacterPreferences::default()
+        };
+        let db = CulturalTraits::new(&mut prefs);
+        assert_eq!(db.name, "hill dwarf".to_string());
+        assert_eq!(db.parent_name, "dwarf".to_string());
+        assert_eq!(db.alignment, "chaotic neutral".to_string());
+        assert_eq!(db.abilities.len(), 2);
+    }
+}

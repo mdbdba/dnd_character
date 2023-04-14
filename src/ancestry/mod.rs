@@ -633,6 +633,34 @@ impl AncestralTraits {
     }
 }
 
+pub fn set_alignments(lg: i16, ng: i16, cg: i16, ln: i16, tn: i16, cn: i16,
+    le: i16, ne: i16, ce: i16) -> HashMap<String, i16> {
+    [   ("lawful good".to_string(), lg),
+        ("neutral good".to_string(), ng),
+        ("chaotic good".to_string(), cg),
+        ("lawful neutral".to_string(), ln),
+        ("true neutral".to_string(), tn),
+        ("chaotic neutral".to_string(), cn),
+        ("lawful evil".to_string(), le),
+        ("neutral evil".to_string(), ne),
+        ("chaotic evil".to_string(), ce), ]
+        .iter()
+        .cloned()
+        .collect()
+}
+
+pub fn set_ability_bonuses(s: i8, d: i8, cn: i8, i: i8, w: i8, ch: i8 ) -> HashMap<String, i8> {
+    [   ("strength".to_string(), s),
+        ("dexterity".to_string(), d),
+        ("constitution".to_string(), cn),
+        ("intelligence".to_string(), i),
+        ("wisdom".to_string(), w),
+        ("charisma".to_string(), ch), ]
+        .iter()
+        .cloned()
+        .collect()
+}
+
 pub struct BaseCulturalTraits {
     pub alignments: HashMap<String, i16>,
     pub ability_bonuses: HashMap<String, i8>,
