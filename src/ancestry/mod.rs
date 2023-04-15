@@ -683,12 +683,6 @@ impl BaseCulturalTraits {
         String::from("true neutral")
     }
 
-    /*
-    fn get_random_string(&self, strings: Vec<String>) -> String {
-        let mut rng = rand::thread_rng();
-        strings.choose(&mut rng).cloned().unwrap_or(String::from("Wonderful"))
-    }
-     */
 }
 
 pub struct CulturalTraits {
@@ -711,6 +705,24 @@ impl CulturalTraits {
             "dragonborn" => new_dragonborn_culture(prefs),
             "dwarf" => new_dwarven_culture(prefs),
             _ => new_dragonborn_culture(prefs),
+        }
+    }
+    pub fn combiner(prefs: &mut CharacterPreferences, base_values: &BaseCulturalTraits) {
+        if prefs.alignment != "None" {
+            prefs.alignment = match prefs.alignment.to_lowercase().as_str() {
+                "lawful good" => "lawful good".to_string(),
+                "good"|"neutral good" => "neutral good".to_string(),
+                "chaotic good" => "chaotic good".to_string(),
+                "lawful neutral" => "lawful neutral".to_string(),
+                "neutral neutral"|"neutral"|"true neutral" => "true neutral".to_string(),
+                "chaotic neutral" => "chaotic neutral".to_string(),
+                "lawful evil" => "lawful evil".to_string(),
+                "evil"|"neutral evil" => "neutral evil".to_string(),
+                "chaotic evil" => "chaotic evil".to_string(),
+                _ => base_values.get_alignment()
+            };
+        } else {
+            prefs.alignment = base_values.get_alignment();
         }
     }
 }

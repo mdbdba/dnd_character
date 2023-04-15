@@ -335,22 +335,8 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
         abilities: cultural_abilities,
 
     };
-    if prefs.alignment != "None" {
-        prefs.alignment = match prefs.alignment.to_lowercase().as_str() {
-            "lawful good" => "lawful good".to_string(),
-            "good"|"neutral good" => "neutral good".to_string(),
-            "chaotic good" => "chaotic good".to_string(),
-            "lawful neutral" => "lawful neutral".to_string(),
-            "neutral neutral"|"neutral"|"true neutral" => "true neutral".to_string(),
-            "chaotic neutral" => "chaotic neutral".to_string(),
-            "lawful evil" => "lawful evil".to_string(),
-            "evil"|"neutral evil" => "neutral evil".to_string(),
-            "chaotic evil" => "chaotic evil".to_string(),
-            _ => base_values.get_alignment()
-        };
-    } else {
-        prefs.alignment = base_values.get_alignment();
-    }
+
+    CulturalTraits::combiner(prefs, &base_values);
 
     CulturalTraits {
         name: combined_name,

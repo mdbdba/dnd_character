@@ -51,7 +51,7 @@ use std::collections::HashMap;
 use rand::distributions::Standard;
 use rand::prelude::Distribution;
 use rand::Rng;
-use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits};
+use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, set_ability_bonuses, set_alignments};
 use crate::character::CharacterPreferences;
 
 #[derive(Debug)]
@@ -382,49 +382,13 @@ pub fn new_dragonborn_culture(prefs: &mut CharacterPreferences) -> CulturalTrait
     cultural_abilities.insert("checks".to_string(), checks);
 
     let base_values = BaseCulturalTraits {
-        alignments: {
-            let mut alignments = HashMap::new();
-            alignments.insert("lawful good".to_string(), 30);
-            alignments.insert("neutral good".to_string(), 10);
-            alignments.insert("chaotic good".to_string(), 4);
-            alignments.insert("lawful neutral".to_string(), 4);
-            alignments.insert("true neutral".to_string(), 4);
-            alignments.insert("chaotic neutral".to_string(), 10);
-            alignments.insert("lawful evil".to_string(), 4);
-            alignments.insert("neutral evil".to_string(), 4);
-            alignments.insert("chaotic evil".to_string(), 30);
-            alignments
-        },
-        ability_bonuses: [
-            ("strength".to_string(), 2),
-            ("dexterity".to_string(), 0),
-            ("constitution".to_string(), 0),
-            ("intelligence".to_string(), 0),
-            ("wisdom".to_string(), 0),
-            ("charisma".to_string(), 1),
-        ]
-            .iter()
-            .cloned()
-            .collect(),
+        alignments: set_alignments(30,10,4,4,4,10,4,4,30),
+        ability_bonuses: set_ability_bonuses(2,0,0,0,0,1),
         abilities: cultural_abilities,
 
     };
-    if prefs.alignment != "None" {
-        prefs.alignment = match prefs.alignment.to_lowercase().as_str() {
-            "lawful good" => "lawful good".to_string(),
-            "neutral good" => "neutral good".to_string(),
-            "chaotic good" => "chaotic good".to_string(),
-            "lawful neutral" => "lawful neutral".to_string(),
-            "true neutral" => "true neutral".to_string(),
-            "chaotic neutral" => "chaotic neutral".to_string(),
-            "lawful evil" => "lawful evil".to_string(),
-            "neutral evil" => "neutral evil".to_string(),
-            "chaotic evil" => "chaotic evil".to_string(),
-            _ => base_values.get_alignment()
-        };
-    } else {
-        prefs.alignment = base_values.get_alignment();
-    }
+
+    CulturalTraits::combiner(prefs, &base_values);
 
     CulturalTraits {
         name: combined_name,
