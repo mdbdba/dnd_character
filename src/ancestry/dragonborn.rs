@@ -51,7 +51,7 @@ use std::collections::HashMap;
 use rand::distributions::Standard;
 use rand::prelude::Distribution;
 use rand::Rng;
-use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, set_ability_bonuses, set_alignments};
+use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, LanguageTraits, set_ability_bonuses, set_alignments};
 use crate::character::CharacterPreferences;
 
 #[derive(Debug)]
@@ -336,6 +336,22 @@ pub fn new_dragonborn_culture(prefs: &mut CharacterPreferences) -> CulturalTrait
     let combined_name = format!("{:?} {}", color, parent_name.clone()).to_lowercase();
     let mut cultural_abilities: HashMap<String, HashMap<String, CharacterAbility>> = HashMap::new();
 
+    let languages = BaseCulturalTraits::add_languages(
+        vec![
+            LanguageTraits {
+                name: "common".to_string(),
+                can_read: true,
+                can_speak: true,
+                can_write: true,
+            },
+            LanguageTraits {
+                name: "draconic".to_string(),
+                can_read: true,
+                can_speak: true,
+                can_write: true,
+            },
+        ]);
+    /*
     let mut languages: HashMap<String, CharacterAbility> = HashMap::new();
     let ability1 = CharacterAbility{
         ability_name: "ancestral language".to_string(),
@@ -361,7 +377,7 @@ pub fn new_dragonborn_culture(prefs: &mut CharacterPreferences) -> CulturalTrait
     };
     languages.insert("common".to_string(), ability1);
     languages.insert("draconic".to_string(), ability2);
-
+     */
 
     let mut checks: HashMap<String, CharacterAbility> = HashMap::new();
     let ability1 = CharacterAbility{
@@ -510,5 +526,16 @@ mod tests {
         assert_eq!(db.parent_name, "dragonborn".to_string());
         assert_eq!(db.alignment, "chaotic neutral".to_string());
         assert_eq!(db.abilities.len(), 2);
+        let common = &db.abilities["languages"]["common"];
+        assert_eq!(common.ability_name,
+                   "ancestral language".to_string());
+        assert_eq!(common.range.len(), 3);
+        assert!(common.range.contains(&"read".to_string()), "read value was not found");
+
+        let draconic = &db.abilities["languages"]["draconic"];
+        assert_eq!(draconic.ability_name,
+                   "ancestral language".to_string());
+        assert_eq!(draconic.range.len(), 3);
+        assert!(draconic.range.contains(&"read".to_string()), "read value was not found");
     }
 }

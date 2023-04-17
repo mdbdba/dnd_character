@@ -33,7 +33,7 @@ use std::collections::HashMap;
 use rand::distributions::Standard;
 use rand::prelude::Distribution;
 use rand::Rng;
-use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, get_random_string, set_ability_bonuses, set_alignments};
+use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, get_random_string, LanguageTraits, set_ability_bonuses, set_alignments};
 use crate::character::CharacterPreferences;
 
 #[derive(Debug)]
@@ -240,6 +240,22 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
     let combined_name = format!("{:?} {}", sub_class, parent_name.clone()).to_lowercase();
     let mut cultural_abilities: HashMap<String, HashMap<String, CharacterAbility>> = HashMap::new();
 
+    let languages = BaseCulturalTraits::add_languages(
+        vec![
+            LanguageTraits {
+                name: "common".to_string(),
+                can_read: true,
+                can_speak: true,
+                can_write: true,
+            },
+            LanguageTraits {
+                name: "dwarvish".to_string(),
+                can_read: true,
+                can_speak: true,
+                can_write: true,
+            },
+        ]);
+    /*
     let mut languages: HashMap<String, CharacterAbility> = HashMap::new();
     languages.insert("common".to_string(), CharacterAbility{
         ability_name: "ancestral language".to_string(),
@@ -264,6 +280,7 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
         mechanic: vec!{"none".to_string()},
         availability: vec!{"always".to_string()}
     });
+     */
 
     /*
     Dwarven Combat Training. You have proficiency with the battleaxe, handaxe, light hammer,
@@ -393,5 +410,16 @@ mod tests {
         assert_eq!(db.parent_name, "dwarf".to_string());
         assert_eq!(db.alignment, "chaotic neutral".to_string());
         assert_eq!(db.abilities.len(), 2);
+
+        let common = &db.abilities["languages"]["common"];
+        assert_eq!(common.ability_name,
+                   "ancestral language".to_string());
+        assert_eq!(common.range.len(), 3);
+        assert!(common.range.contains(&"read".to_string()), "read value was not found");
+        let dwarvish = &db.abilities["languages"]["dwarvish"];
+        assert_eq!(dwarvish.ability_name,
+                   "ancestral language".to_string());
+        assert_eq!(dwarvish.range.len(), 3);
+        assert!(dwarvish.range.contains(&"read".to_string()), "read value was not found");
     }
 }

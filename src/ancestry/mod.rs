@@ -661,13 +661,20 @@ pub fn set_ability_bonuses(s: i8, d: i8, cn: i8, i: i8, w: i8, ch: i8 ) -> HashM
         .collect()
 }
 
+pub struct LanguageTraits {
+    pub name: String,
+    pub can_speak: bool,
+    pub can_read: bool,
+    pub can_write: bool
+}
+
 pub struct BaseCulturalTraits {
     pub alignments: HashMap<String, i16>,
     pub ability_bonuses: HashMap<String, i8>,
     pub abilities: HashMap<String, HashMap<String, CharacterAbility>>,
 }
 impl BaseCulturalTraits {
-    fn get_alignment(&self) -> String {
+    pub fn get_alignment(&self) -> String {
         let mut rng = rand::thread_rng();
         let mut sum = 0;
         for (_, chance) in &self.alignments {
@@ -681,6 +688,31 @@ impl BaseCulturalTraits {
             sum += chance;
         }
         String::from("true neutral")
+    }
+    pub fn add_languages( src: Vec<LanguageTraits>) -> HashMap<String, CharacterAbility>  {
+        let mut languages: HashMap<String, CharacterAbility> = HashMap::new();
+        for lt in src {
+            let mut modes: Vec<String> = Vec::new();
+            if lt.can_speak == true {
+                modes.push("speak".to_string())
+            }
+            if lt.can_read == true {
+                modes.push("read".to_string())
+            }
+            if lt.can_write == true {
+                modes.push("write".to_string())
+            }
+            let ability1 = CharacterAbility {
+                ability_name: "ancestral language".to_string(),
+                category: "language".to_string(),
+                specific_effect: vec! {lt.name.clone()},
+                range: modes,
+                mechanic: vec! {"none".to_string()},
+                availability: vec! {"always".to_string()}
+            };
+            languages.insert(lt.name.clone(), ability1);
+        }
+        languages
     }
 
 }
