@@ -33,7 +33,7 @@ use std::collections::HashMap;
 use rand::distributions::Standard;
 use rand::prelude::Distribution;
 use rand::Rng;
-use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, get_random_string, LanguageTraits, set_ability_bonuses, set_alignments};
+use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, get_i16_some_value, get_lc_some_value, get_random_string, LanguageTraits, set_ability_bonuses, set_alignments};
 use crate::character::CharacterPreferences;
 
 #[derive(Debug)]
@@ -183,18 +183,21 @@ pub fn new_dwarven_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits
 
     AncestralTraits::combiner(prefs, &base_values);
 
+    let just_in_case_age = base_values.get_age();
+    let just_in_case_height = base_values.get_height();
+    let just_in_case_weight = base_values.get_weight();
     AncestralTraits {
         name: base_values.name,
         parent_name: base_values.parent_name,
-        age: prefs.age,
+        age: get_i16_some_value(prefs.age, just_in_case_age),
         base_size,
         base_walking_speed,
-        height: prefs.height,
-        weight: prefs.weight,
-        skin_tone: prefs.skin_tone.clone(),
-        hair_color: prefs.hair_color.clone(),
-        hair_type: prefs.hair_type.clone(),
-        eye_color: prefs.eye_color.clone(),
+        height: get_i16_some_value(prefs.height, just_in_case_height),
+        weight: get_i16_some_value(prefs.weight, just_in_case_weight),
+        skin_tone: get_lc_some_value(prefs.skin_tone.clone(), "wonderful".to_string()),
+        hair_color: get_lc_some_value(prefs.hair_color.clone(), "wonderful".to_string()),
+        hair_type: get_lc_some_value(prefs.hair_type.clone(), "wonderful".to_string()),
+        eye_color: get_lc_some_value(prefs.eye_color.clone(), "wonderful".to_string()),
         abilities: base_values.abilities,
         source_material: base_values.source_material,
         source_credit_url: base_values.source_credit_url,
@@ -255,32 +258,6 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
                 can_write: true,
             },
         ]);
-    /*
-    let mut languages: HashMap<String, CharacterAbility> = HashMap::new();
-    languages.insert("common".to_string(), CharacterAbility{
-        ability_name: "ancestral language".to_string(),
-        category: "language".to_string(),
-        specific_effect: vec!{"common".to_string()},
-        range: vec!{
-            "speak".to_string(),
-            "read".to_string(),
-            "write".to_string()},
-        mechanic: vec!{"none".to_string()},
-        availability: vec!{"always".to_string()}
-    });
-
-    languages.insert("dwarvish".to_string(), CharacterAbility{
-        ability_name: "ancestral language".to_string(),
-        category: "language".to_string(),
-        specific_effect: vec!{"dwarvish".to_string()},
-        range: vec!{
-            "speak".to_string(),
-            "read".to_string(),
-            "write".to_string()},
-        mechanic: vec!{"none".to_string()},
-        availability: vec!{"always".to_string()}
-    });
-     */
 
     /*
     Dwarven Combat Training. You have proficiency with the battleaxe, handaxe, light hammer,
@@ -327,6 +304,7 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
         availability: vec!{"always".to_string()}
     });
 
+
     let tool_proficiency = get_random_string(vec!{
         "smith’s tools".to_string(),
         "brewer’s supplies".to_string(),
@@ -347,7 +325,11 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
 
     let base_values = BaseCulturalTraits {
         alignments: set_alignments(45,5,5,15,5,5,10,5,5),
-
+        tool_proficiency_choices: Some(vec!{
+            "smith’s tools".to_string(),
+            "brewer’s supplies".to_string(),
+            "mechanic’s tools".to_string(),
+            "mason’s tools".to_string()}),
         ability_bonuses: set_ability_bonuses(0,0,2,0,1,0),
         abilities: cultural_abilities,
 
@@ -358,7 +340,7 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
     CulturalTraits {
         name: combined_name,
         parent_name,
-        alignment: prefs.alignment.clone(),
+        alignment: get_lc_some_value(prefs.alignment.clone(), "true neutral".to_string()),
         ability_bonuses: base_values.ability_bonuses,
         abilities: base_values.abilities,
         source_material: { "SRD".to_string() },
@@ -402,7 +384,7 @@ mod tests {
     fn test_hill_dwarf_culture() {
         let mut prefs = CharacterPreferences {
             ancestry:  "hill dwarf".to_string(),
-            alignment: "chaotic neutral".to_string(),
+            alignment: Some("chaotic neutral".to_string()),
             ..CharacterPreferences::default()
         };
         let db = CulturalTraits::new(&mut prefs);

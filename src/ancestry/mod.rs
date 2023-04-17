@@ -424,6 +424,27 @@ use crate::modifier::Modifier;
 use crate::roll::roll_die;
 use crate::character::CharacterPreferences;
 
+pub fn get_lc_some_value(src: Option<String>, default: String)-> String {
+    let return_value;
+    if let Some(value) = src.clone() {
+        return_value = value.to_lowercase();
+    } else {
+        return_value = default.clone();
+    }
+    return_value
+}
+
+pub fn get_i16_some_value(src: Option<i16>, default: i16)-> i16 {
+    let return_value;
+    if let Some(value) = src.clone() {
+        return_value = value;
+    } else {
+        return_value = default.clone();
+    }
+    return_value
+}
+
+
 #[derive(Clone)]
 pub struct CharacterAbility {
     pub ability_name: String, // What the ability is named in the documentation
@@ -585,50 +606,53 @@ impl AncestralTraits {
         }
     }
     fn combiner(prefs: &mut CharacterPreferences, base_values: &BaseAncestralTraits) {
-        if prefs.age != -999 {
-            if prefs.age < 1 || prefs.age > (base_values.avg_max_age +40) {
-                prefs.age = base_values.get_age();
+        if let Some(value) = prefs.age  {
+            if value < 1 || value > (base_values.avg_max_age +40) {
+                prefs.age = Some(base_values.get_age());
             }
         } else {
-            prefs.age = base_values.get_age();
+            prefs.age = Some(base_values.get_age());
         }
-        if prefs.height != -999 {
-            if prefs.height < base_values.height_min_inches ||
-                prefs.height > (base_values.height_min_inches +
-                    (base_values.height_modifier_multiplier * base_values.height_modifier_die) +12) {
-                prefs.height = base_values.get_height();
+        if let Some(value) = prefs.height {
+            if value < base_values.height_min_inches ||
+                value > (base_values.height_min_inches +
+                    (base_values.height_modifier_multiplier *
+                        base_values.height_modifier_die) +12) {
+                prefs.height = Some(base_values.get_height());
             }
         } else {
-            prefs.height = base_values.get_height();
+            prefs.height = Some(base_values.get_height());
         }
-        if prefs.weight != -999 {
-            if prefs.weight < 1 || prefs.weight > (base_values.weight_min_pounds +
-                (base_values.weight_modifier_multiplier * base_values.weight_modifier_die) + 50) {
-                prefs.weight = base_values.get_weight();
+        if let Some(value) = prefs.weight {
+            if value < base_values.weight_min_pounds ||
+                value > (base_values.weight_min_pounds +
+                (base_values.weight_modifier_multiplier *
+                    base_values.weight_modifier_die) + 50) {
+                prefs.weight = Some(base_values.get_weight());
             }
         } else {
-            prefs.weight = base_values.get_weight();
+            prefs.weight = Some(base_values.get_weight());
         }
 
-        if prefs.skin_tone != "None" {
-            prefs.skin_tone = prefs.skin_tone.to_lowercase();
+        if let Some(value) = prefs.skin_tone.clone()  {
+            prefs.skin_tone = Some(value.to_lowercase());
         } else {
-            prefs.skin_tone = base_values.get_skin_tone();
+            prefs.skin_tone = Some(base_values.get_skin_tone());
         }
-        if prefs.hair_color != "None" {
-            prefs.hair_color = prefs.hair_color.to_lowercase();
+        if let Some(value) = prefs.hair_color.clone() {
+            prefs.hair_color = Some(value.to_lowercase());
         } else {
-            prefs.hair_color = base_values.get_hair_color();
+            prefs.hair_color = Some(base_values.get_hair_color());
         }
-        if prefs.hair_type != "None" {
-            prefs.hair_type = prefs.hair_type.to_lowercase();
+        if let Some(value) = prefs.hair_type.clone() {
+            prefs.hair_type = Some(value.to_lowercase());
         } else {
-            prefs.hair_type = base_values.get_hair_type();
+            prefs.hair_type = Some(base_values.get_hair_type());
         }
-        if prefs.eye_color != "None" {
-            prefs.eye_color = prefs.eye_color.to_lowercase();
+        if let Some(value) = prefs.eye_color.clone() {
+            prefs.eye_color = Some(value.to_lowercase());
         } else {
-            prefs.eye_color = base_values.get_eye_color();
+            prefs.eye_color = Some(base_values.get_eye_color());
         }
     }
 }
@@ -671,6 +695,7 @@ pub struct LanguageTraits {
 pub struct BaseCulturalTraits {
     pub alignments: HashMap<String, i16>,
     pub ability_bonuses: HashMap<String, i8>,
+    pub tool_proficiency_choices: Option<Vec<String>>,
     pub abilities: HashMap<String, HashMap<String, CharacterAbility>>,
 }
 impl BaseCulturalTraits {
@@ -740,8 +765,8 @@ impl CulturalTraits {
         }
     }
     pub fn combiner(prefs: &mut CharacterPreferences, base_values: &BaseCulturalTraits) {
-        if prefs.alignment != "None" {
-            prefs.alignment = match prefs.alignment.to_lowercase().as_str() {
+        if let Some(value) = prefs.alignment.clone() {
+            let alignment_string = match value.to_lowercase().as_str() {
                 "lawful good" => "lawful good".to_string(),
                 "good"|"neutral good" => "neutral good".to_string(),
                 "chaotic good" => "chaotic good".to_string(),
@@ -753,8 +778,9 @@ impl CulturalTraits {
                 "chaotic evil" => "chaotic evil".to_string(),
                 _ => base_values.get_alignment()
             };
+            prefs.alignment = Some(alignment_string)
         } else {
-            prefs.alignment = base_values.get_alignment();
+            prefs.alignment = Some(base_values.get_alignment());
         }
     }
 }

@@ -51,7 +51,7 @@ use std::collections::HashMap;
 use rand::distributions::Standard;
 use rand::prelude::Distribution;
 use rand::Rng;
-use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, LanguageTraits, set_ability_bonuses, set_alignments};
+use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, get_i16_some_value, get_lc_some_value, LanguageTraits, set_ability_bonuses, set_alignments};
 use crate::character::CharacterPreferences;
 
 #[derive(Debug)]
@@ -286,18 +286,21 @@ pub fn new_dragonborn_ancestry(prefs: &mut CharacterPreferences) -> AncestralTra
 
     AncestralTraits::combiner(prefs, &base_values);
 
+    let wonderful = "wonderful".to_string();
+
+
     AncestralTraits {
         name,
         parent_name,
-        age: prefs.age,
+        age: get_i16_some_value(prefs.age, base_values.get_age()),
         base_size,
         base_walking_speed,
-        height: prefs.height,
-        weight: prefs.weight,
-        skin_tone: prefs.skin_tone.clone(),
-        hair_color: prefs.hair_color.clone(),
-        hair_type: prefs.hair_type.clone(),
-        eye_color: prefs.eye_color.clone(),
+        height: get_i16_some_value(prefs.height, base_values.get_height()),
+        weight: get_i16_some_value(prefs.weight, base_values.get_weight()),
+        skin_tone: get_lc_some_value(prefs.skin_tone.clone(), wonderful.clone()),
+        hair_color: get_lc_some_value(prefs.hair_color.clone(),wonderful.clone()),
+        hair_type: get_lc_some_value(prefs.hair_type.clone(),wonderful.clone()),
+        eye_color: get_lc_some_value(prefs.eye_color.clone(),wonderful.clone()),
         abilities: base_values.abilities,
         source_material: base_values.source_material,
         source_credit_url: base_values.source_credit_url,
@@ -351,33 +354,7 @@ pub fn new_dragonborn_culture(prefs: &mut CharacterPreferences) -> CulturalTrait
                 can_write: true,
             },
         ]);
-    /*
-    let mut languages: HashMap<String, CharacterAbility> = HashMap::new();
-    let ability1 = CharacterAbility{
-        ability_name: "ancestral language".to_string(),
-        category: "language".to_string(),
-        specific_effect: vec!{"common".to_string()},
-        range: vec!{
-            "speak".to_string(),
-            "read".to_string(),
-            "write".to_string()},
-        mechanic: vec!{"none".to_string()},
-        availability: vec!{"always".to_string()}
-    };
-    let ability2 =  CharacterAbility{
-        ability_name: "ancestral language".to_string(),
-        category: "language".to_string(),
-        specific_effect: vec!{"draconic".to_string()},
-        range: vec!{
-            "speak".to_string(),
-            "read".to_string(),
-            "write".to_string()},
-        mechanic: vec!{"none".to_string()},
-        availability: vec!{"always".to_string()}
-    };
-    languages.insert("common".to_string(), ability1);
-    languages.insert("draconic".to_string(), ability2);
-     */
+
 
     let mut checks: HashMap<String, CharacterAbility> = HashMap::new();
     let ability1 = CharacterAbility{
@@ -399,6 +376,7 @@ pub fn new_dragonborn_culture(prefs: &mut CharacterPreferences) -> CulturalTrait
 
     let base_values = BaseCulturalTraits {
         alignments: set_alignments(30,10,4,4,4,10,4,4,30),
+        tool_proficiency_choices: None,
         ability_bonuses: set_ability_bonuses(2,0,0,0,0,1),
         abilities: cultural_abilities,
 
@@ -409,7 +387,7 @@ pub fn new_dragonborn_culture(prefs: &mut CharacterPreferences) -> CulturalTrait
     CulturalTraits {
         name: combined_name,
         parent_name,
-        alignment: prefs.alignment.clone(),
+        alignment: get_lc_some_value(prefs.alignment.clone(), "true neutral".to_string()),
         ability_bonuses: base_values.ability_bonuses,
         abilities: base_values.abilities,
         source_material: { "SRD".to_string() },
@@ -489,16 +467,17 @@ mod tests {
         let mut prefs = CharacterPreferences {
             name: "chuck".to_string(),
             ancestry: "silver dragonborn".to_string(),
-            age: 99,
-            height: 92,
-            weight: 275,
-            alignment: "chaotic neutral".to_string(),
+            age: Some(99),
+            height: Some(92),
+            weight: Some(275),
+            alignment: Some("chaotic neutral".to_string()),
             culture: "dragonborn".to_string(),
-            skin_tone: "silver".to_string(),
-            eye_color: "black".to_string(),
-            hair_type: "bald".to_string(),
-            hair_color: "none".to_string(),
+            skin_tone: Some("silver".to_string()),
+            eye_color: Some("black".to_string()),
+            hair_type: Some("bald".to_string()),
+            hair_color: Some("none".to_string()),
             abilities: None,
+            tool_proficiencies: None
         };
         let db = AncestralTraits::new(&mut prefs);
         assert_eq!(db.name, "silver dragonborn".to_string());
@@ -518,7 +497,7 @@ mod tests {
     fn test_blue_dragonborn_culture() {
         let mut prefs = CharacterPreferences {
             ancestry:  "blue dragonborn".to_string(),
-            alignment: "chaotic neutral".to_string(),
+            alignment: Some("chaotic neutral".to_string()),
             ..CharacterPreferences::default()
         };
         let db = CulturalTraits::new(&mut prefs);
