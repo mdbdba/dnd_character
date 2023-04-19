@@ -72,14 +72,9 @@ pub fn new_dwarven_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits
     let mut ancestry_abilities: HashMap<String, HashMap<String, CharacterAbility>> = HashMap::new();
 
     let mut environmental: HashMap<String, CharacterAbility> = HashMap::new();
-    let ability1 = CharacterAbility{
-        ability_name: "darkvision".to_string(),
-        category: "environmental".to_string(),
-        specific_effect: vec! {"dim light".to_string(), "dark".to_string()},
-        range: vec!{"60 feet".to_string()},
-        mechanic: vec!{"sight".to_string()},
-        availability: vec!{"always".to_string()}
-    };
+    
+    let ability1 = BaseAncestralTraits::get_darkvision(None);
+
     environmental.insert("darkvision".to_string(), ability1);
 
     /*
@@ -95,18 +90,11 @@ pub fn new_dwarven_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits
         mechanic: vec!{"advantage".to_string()},
         availability: vec!{"always".to_string()}
     };
-    saving_throws.insert("darkvision".to_string(), ability1);
+    saving_throws.insert("poison".to_string(), ability1);
 
-    let mut resistances: HashMap<String, CharacterAbility> = HashMap::new();
-    let ability1 = CharacterAbility{
-        ability_name: "damage resistance".to_string(),
-        category: "resistance".to_string(),
-        specific_effect: vec! {"poison".to_string()},
-        range: vec!{"all".to_string()},
-        mechanic: vec!{"half damage".to_string()},
-        availability: vec!{"always".to_string()}
-    };
-    resistances.insert("poison".to_string(), ability1);
+    let resistances =
+        BaseAncestralTraits::add_resistances(vec!{"poison".to_string()});
+
 
     /*
         Dwarven Toughness. Your hit point maximum increases by 1, and it increases by 1 every time you

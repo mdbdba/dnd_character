@@ -209,16 +209,9 @@ pub fn new_dragonborn_ancestry(prefs: &mut CharacterPreferences) -> AncestralTra
 
     let mut ancestry_abilities: HashMap<String, HashMap<String, CharacterAbility>> = HashMap::new();
 
-    let mut resistances: HashMap<String, CharacterAbility> = HashMap::new();
-    let ability1 = CharacterAbility{
-        ability_name: "damage resistance".to_string(),
-        category: "resistance".to_string(),
-        specific_effect: vec! {resistance.clone()},
-        range: vec!{"all".to_string()},
-        mechanic: vec!{"half damage".to_string()},
-        availability: vec!{"always".to_string()}
-    };
-    resistances.insert(resistance.clone(), ability1);
+    let resistances =
+        BaseAncestralTraits::add_resistances(vec!{resistance.clone()});
+
 
     let mut offensive: HashMap<String, CharacterAbility> = HashMap::new();
     let ability1 = CharacterAbility{
@@ -354,7 +347,6 @@ pub fn new_dragonborn_culture(prefs: &mut CharacterPreferences) -> CulturalTrait
                 can_write: true,
             },
         ]);
-
 
     let mut checks: HashMap<String, CharacterAbility> = HashMap::new();
     let ability1 = CharacterAbility{

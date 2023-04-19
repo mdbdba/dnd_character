@@ -567,6 +567,50 @@ impl BaseAncestralTraits {
     fn get_eye_color(&self) -> String {
         get_random_string(self.eye_colors.clone(), "wonderful".to_string())
     }
+    pub fn get_darkvision(range: Option<Vec<String>>) -> CharacterAbility {
+        let ability_range;
+        if let Some(value) = range {
+            ability_range = value.clone();
+        } else {
+            ability_range = vec!{"60 feet".to_string()};
+        }
+        CharacterAbility{
+            ability_name: "darkvision".to_string(),
+            category: "environmental".to_string(),
+            specific_effect: vec! {"dim light".to_string(), "dark".to_string()},
+            range: ability_range,
+            mechanic: vec!{"sight".to_string()},
+            availability: vec!{"always".to_string()}
+        }
+    }
+    pub fn add_resistances(src: Vec<String>) -> HashMap<String, CharacterAbility> {
+        let mut resistances: HashMap<String, CharacterAbility> = HashMap::new();
+        for res in src {
+            resistances.insert(res.clone(), CharacterAbility {
+                ability_name: "damage resistance".to_string(),
+                category: "damage".to_string(),
+                specific_effect: vec! {res.clone()},
+                range: vec! {"all".to_string()},
+                mechanic: vec! {"half damage".to_string()},
+                availability: vec! {"always".to_string()}
+            });
+        }
+        resistances
+    }
+    pub fn add_immunities(src: Vec<String>) -> HashMap<String, CharacterAbility> {
+        let mut immunities: HashMap<String, CharacterAbility> = HashMap::new();
+        for res in src {
+            immunities.insert(res.clone(), CharacterAbility {
+                ability_name: "damage immunity".to_string(),
+                category: "damage".to_string(),
+                specific_effect: vec! {res.clone()},
+                range: vec! {"all".to_string()},
+                mechanic: vec! {"no damage".to_string()},
+                availability: vec! {"always".to_string()}
+            });
+        }
+        immunities
+    }
 }
 
 pub fn get_random_string(strings: Vec<String>, default: String) -> String {
