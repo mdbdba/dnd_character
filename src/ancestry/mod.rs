@@ -422,7 +422,7 @@ use crate::ancestry::dragonborn::{new_dragonborn_ancestry, new_dragonborn_cultur
 use crate::ancestry::dwarf::{new_dwarven_ancestry, new_dwarven_culture};
 use crate::modifier::Modifier;
 use crate::roll::roll_die;
-use crate::character::CharacterPreferences;
+use crate::character::{CharacterPreferences, DamageType, get_damage_type, get_vantage, Vantage};
 
 pub fn get_lc_some_value(src: Option<String>, default: String)-> String {
     let return_value;
@@ -566,6 +566,20 @@ impl BaseAncestralTraits {
     }
     fn get_eye_color(&self) -> String {
         get_random_string(self.eye_colors.clone(), "wonderful".to_string())
+    }
+    pub fn get_saving_throw(name: String, 
+                            vantage: Vantage, 
+                            damage_type: DamageType) -> CharacterAbility {
+        let ability_vantage = get_vantage(vantage);
+        let ability_damage_type = get_damage_type(damage_type);
+        CharacterAbility{
+            ability_name: name,
+            category: ability_vantage.clone(),
+            specific_effect: vec! {ability_damage_type},
+            range: vec!{"all".to_string()},
+            mechanic: vec!{ability_vantage.clone()},
+            availability: vec!{"always".to_string()}
+        }
     }
     pub fn get_darkvision(range: Option<Vec<String>>) -> CharacterAbility {
         let ability_range;

@@ -34,7 +34,7 @@ use rand::distributions::Standard;
 use rand::prelude::Distribution;
 use rand::Rng;
 use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, get_i16_some_value, get_lc_some_value, get_random_string, LanguageTraits, set_ability_bonuses, set_alignments};
-use crate::character::CharacterPreferences;
+use crate::character::{CharacterPreferences, DamageType, Vantage};
 
 #[derive(Debug)]
 pub enum SubClass {
@@ -72,7 +72,7 @@ pub fn new_dwarven_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits
     let mut ancestry_abilities: HashMap<String, HashMap<String, CharacterAbility>> = HashMap::new();
 
     let mut environmental: HashMap<String, CharacterAbility> = HashMap::new();
-    
+
     let ability1 = BaseAncestralTraits::get_darkvision(None);
 
     environmental.insert("darkvision".to_string(), ability1);
@@ -82,14 +82,11 @@ pub fn new_dwarven_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits
     against poison damage, most likely a feature of you ancestors’ diet.
     */
     let mut saving_throws: HashMap<String, CharacterAbility> = HashMap::new();
-    let ability1 = CharacterAbility{
-        ability_name: "dwarven resilience".to_string(),
-        category: "advantage".to_string(),
-        specific_effect: vec! {"poison".to_string()},
-        range: vec!{"all".to_string()},
-        mechanic: vec!{"advantage".to_string()},
-        availability: vec!{"always".to_string()}
-    };
+    let ability1 = BaseAncestralTraits::get_saving_throw(
+        "dwarven resilience".to_string(),
+        Vantage::Advantage,
+        DamageType::Poison);
+
     saving_throws.insert("poison".to_string(), ability1);
 
     let resistances =

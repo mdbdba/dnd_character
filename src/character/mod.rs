@@ -1,6 +1,51 @@
 use std::collections::HashMap;
 use crate::ancestry::CharacterAbility;
 
+pub enum Vantage {
+    Advantage,
+    Disadvantage
+}
+pub fn get_vantage(src: Vantage) -> String {
+    match src {
+        Advantage=> "advantage".to_string(),
+        Disadvantage=> "disadvantage".to_string(),
+    }
+}
+
+pub enum DamageType {
+    Acid,
+    Bludgeoning,
+    Cold,
+    Fire,
+    Force,
+    Lightning,
+    Necrotic,
+    Piercing,
+    Poison,
+    Psychic,
+    Radiant,
+    Slashing,
+    Thunder
+}
+
+pub fn get_damage_type(src: DamageType) -> String {
+    match src {
+        Acid=> "acid".to_string(),
+        Bludgeoning=> "bludgeoning".to_string(),
+        Cold=> "cold".to_string(),
+        Fire=> "fire".to_string(),
+        Force=> "force".to_string(),
+        Lightning=> "lightning".to_string(),
+        Necrotic=> "necrotic".to_string(),
+        Piercing=> "piercing".to_string(),
+        Poison=> "poison".to_string(),
+        Psychic=> "psychic".to_string(),
+        Radiant=> "radiant".to_string(),
+        Slashing=> "slashing".to_string(),
+        Thunder=> "thunder".to_string(),
+    }
+}
+
 pub struct CharacterPreferences {
     pub name: String,
     pub ancestry: String,
