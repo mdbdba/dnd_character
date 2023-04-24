@@ -422,7 +422,7 @@ use crate::ancestry::dragonborn::{new_dragonborn_ancestry, new_dragonborn_cultur
 use crate::ancestry::dwarf::{new_dwarven_ancestry, new_dwarven_culture};
 use crate::modifier::Modifier;
 use crate::roll::roll_die;
-use crate::character::{CharacterPreferences, DamageType, get_damage_type, get_vantage, Vantage};
+use crate::character::{CharacterAbility, CharacterPreferences, DamageType, get_damage_type, get_vantage, MechanicCategory, MechanicLevel, Vantage};
 
 pub fn get_lc_some_value(src: Option<String>, default: String)-> String {
     let return_value;
@@ -444,7 +444,7 @@ pub fn get_i16_some_value(src: Option<i16>, default: i16)-> i16 {
     return_value
 }
 
-
+/*
 #[derive(Clone)]
 pub struct CharacterAbility {
     pub ability_name: String, // What the ability is named in the documentation
@@ -456,7 +456,9 @@ pub struct CharacterAbility {
 
 }
 
-#[derive(Clone)]
+ */
+
+// #[derive(Clone)]
 pub struct BaseAncestralTraits {
     name: String,
     parent_name: String,
@@ -567,17 +569,31 @@ impl BaseAncestralTraits {
     fn get_eye_color(&self) -> String {
         get_random_string(self.eye_colors.clone(), "wonderful".to_string())
     }
-    pub fn get_saving_throw(name: String, 
-                            vantage: Vantage, 
+    pub fn get_saving_throw(name: String,
+                            vantage: Vantage,
                             damage_type: DamageType) -> CharacterAbility {
         let ability_vantage = get_vantage(vantage);
+        let mech_enum_value: MechanicCategory;
+        if ability_vantage == "advantage" {
+            mech_enum_value = MechanicCategory::Advantage;
+        } else {
+            mech_enum_value = MechanicCategory::Disadvantage;
+        }
         let ability_damage_type = get_damage_type(damage_type);
         CharacterAbility{
             ability_name: name,
             category: ability_vantage.clone(),
             specific_effect: vec! {ability_damage_type},
             range: vec!{"all".to_string()},
-            mechanic: vec!{ability_vantage.clone()},
+            mechanic: vec!{
+                MechanicLevel {
+                    level: 1,
+                    roll_multiplier: None,
+                    roll_die: None,
+                    adjustment: None,
+                    category: mech_enum_value,
+                }
+            },
             availability: vec!{"always".to_string()}
         }
     }
@@ -593,7 +609,15 @@ impl BaseAncestralTraits {
             category: "environmental".to_string(),
             specific_effect: vec! {"dim light".to_string(), "dark".to_string()},
             range: ability_range,
-            mechanic: vec!{"sight".to_string()},
+            mechanic: vec!{
+                MechanicLevel {
+                    level: 1,
+                    roll_multiplier: None,
+                    roll_die: None,
+                    adjustment: None,
+                    category: MechanicCategory::Sight,
+                }
+            },
             availability: vec!{"always".to_string()}
         }
     }
@@ -605,7 +629,16 @@ impl BaseAncestralTraits {
                 category: "damage".to_string(),
                 specific_effect: vec! {res.clone()},
                 range: vec! {"all".to_string()},
-                mechanic: vec! {"half damage".to_string()},
+                // mechanic: vec! {"half damage".to_string()},
+                mechanic: vec!{
+                    MechanicLevel {
+                        level: 1,
+                        roll_multiplier: None,
+                        roll_die: None,
+                        adjustment: None,
+                        category: MechanicCategory::HalfDamage,
+                    }
+                },
                 availability: vec! {"always".to_string()}
             });
         }
@@ -619,7 +652,16 @@ impl BaseAncestralTraits {
                 category: "damage".to_string(),
                 specific_effect: vec! {res.clone()},
                 range: vec! {"all".to_string()},
-                mechanic: vec! {"no damage".to_string()},
+                // mechanic: vec! {"no damage".to_string()},
+                mechanic: vec!{
+                    MechanicLevel {
+                        level: 1,
+                        roll_multiplier: None,
+                        roll_die: None,
+                        adjustment: None,
+                        category: MechanicCategory::NoDamage,
+                    }
+                },
                 availability: vec! {"always".to_string()}
             });
         }
@@ -790,7 +832,16 @@ impl BaseCulturalTraits {
                 category: "language".to_string(),
                 specific_effect: vec! {lt.name.clone()},
                 range: modes,
-                mechanic: vec! {"none".to_string()},
+                // mechanic: vec! {"none".to_string()},
+                mechanic: vec!{
+                    MechanicLevel {
+                        level: 1,
+                        roll_multiplier: None,
+                        roll_die: None,
+                        adjustment: None,
+                        category: MechanicCategory::Language,
+                    }
+                },
                 availability: vec! {"always".to_string()}
             };
             languages.insert(lt.name.clone(), ability1);

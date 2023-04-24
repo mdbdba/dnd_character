@@ -1,5 +1,55 @@
 use std::collections::HashMap;
-use crate::ancestry::CharacterAbility;
+// use crate::ancestry::CharacterAbility;
+
+
+// #[derive(Clone)]
+pub struct CharacterAbility {
+    pub ability_name: String, // What the ability is named in the documentation
+    pub category: String, // For sorting into what it does for the character. (Spell, Language)
+    pub specific_effect: Vec<String>, // What is it allowing, like Spell Name, language name
+    pub range: Vec<String>, // actual distances for spells and melee, or read, written, and spoken for language.
+    pub mechanic: Vec<MechanicLevel>, // explaining the mechanic to be used. amt of damage, attack roll vs. save, etc
+    pub availability: Vec<String>, // Always, 1 per long rest, etc.
+
+}
+
+pub fn get_weapon_proficiency(name: String, weapon_name: String) -> CharacterAbility {
+    CharacterAbility{
+        ability_name: name.clone(),
+        category: "weapon".to_string(),
+        specific_effect: vec!{weapon_name.clone()},
+        range: vec!{"all".to_string()},
+        mechanic: vec!{
+            MechanicLevel {
+                level: 1,
+                roll_multiplier: None,
+                roll_die: None,
+                adjustment: None,
+                category: MechanicCategory::WeaponProficiency,
+            }},
+        availability: vec!{"always".to_string()}
+    }
+}
+
+pub fn get_tool_proficiency(name: String, tool_name: String ) -> CharacterAbility {
+    CharacterAbility {
+        ability_name: name.to_string(),
+        category: "tool".to_string(),
+        specific_effect: vec! {tool_name.clone()},
+        range: vec! {"all".to_string()},
+        mechanic: vec! {
+            MechanicLevel {
+                level: 1,
+                roll_multiplier: None,
+                roll_die: None,
+                adjustment: None,
+                category: MechanicCategory::ToolProficiency,
+            }},
+        availability: vec! {"always".to_string()}
+    }
+}
+
+
 
 pub enum Vantage {
     Advantage,
@@ -45,6 +95,28 @@ pub fn get_damage_type(src: DamageType) -> String {
         Thunder=> "thunder".to_string(),
     }
 }
+
+pub enum MechanicCategory {
+    Damage,
+    NoDamage,
+    HalfDamage,
+    AdditionalTarget,
+    Advantage,
+    Disadvantage,
+    Sight,
+    Language,
+    HitPoints,
+    WeaponProficiency,
+    ToolProficiency
+}
+pub struct MechanicLevel {
+    pub level: i16,
+    pub roll_multiplier: Option<i16>,
+    pub roll_die: Option<i16>,
+    pub adjustment: Option<i16>,
+    pub category: MechanicCategory,
+}
+
 
 pub struct CharacterPreferences {
     pub name: String,

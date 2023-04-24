@@ -52,7 +52,7 @@ use rand::distributions::Standard;
 use rand::prelude::Distribution;
 use rand::Rng;
 use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, get_i16_some_value, get_lc_some_value, LanguageTraits, set_ability_bonuses, set_alignments};
-use crate::character::CharacterPreferences;
+use crate::character::{CharacterPreferences, MechanicCategory, MechanicLevel};
 
 #[derive(Debug)]
 pub enum DragonbornColor {
@@ -219,11 +219,43 @@ pub fn new_dragonborn_ancestry(prefs: &mut CharacterPreferences) -> AncestralTra
         category: "offensive".to_string(),
         specific_effect: vec! {resistance.clone()},
         range: effect_range,
-        mechanic: vec!{
+        /*mechanic: vec!{
             "1:2d6".to_string(),
             "6:3d6".to_string(),
             "11:4d6".to_string(),
             "16:5d6".to_string()
+        },
+
+         */
+        mechanic: vec!{
+            MechanicLevel {
+                level: 1,
+                roll_multiplier: Some(2),
+                roll_die: Some(6),
+                adjustment: None,
+                category: MechanicCategory::Damage,
+            },
+            MechanicLevel {
+                level: 6,
+                roll_multiplier: Some(3),
+                roll_die: Some(6),
+                adjustment: None,
+                category: MechanicCategory::Damage,
+            },
+            MechanicLevel {
+                level: 11,
+                roll_multiplier: Some(4),
+                roll_die: Some(6),
+                adjustment: None,
+                category: MechanicCategory::Damage,
+            },
+            MechanicLevel {
+                level: 16,
+                roll_multiplier: Some(5),
+                roll_die: Some(6),
+                adjustment: None,
+                category: MechanicCategory::Damage,
+            },
         },
         availability: vec!{
             "short rest".to_string(),
@@ -357,7 +389,16 @@ pub fn new_dragonborn_culture(prefs: &mut CharacterPreferences) -> CulturalTrait
             "specific to dragons".to_string()
         },
         range: vec!{"none".to_string()},
-        mechanic: vec!{"advantage".to_string()},
+        // mechanic: vec!{"advantage".to_string()},
+        mechanic: vec!{
+            MechanicLevel {
+                level: 1,
+                roll_multiplier: None,
+                roll_die: None,
+                adjustment: None,
+                category: MechanicCategory::Advantage,
+            }
+        },
         availability: vec!{"always".to_string()}
     };
     checks.insert("intelligence".to_string(), ability1);

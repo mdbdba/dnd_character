@@ -34,7 +34,7 @@ use rand::distributions::Standard;
 use rand::prelude::Distribution;
 use rand::Rng;
 use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, get_i16_some_value, get_lc_some_value, get_random_string, LanguageTraits, set_ability_bonuses, set_alignments};
-use crate::character::{CharacterPreferences, DamageType, Vantage};
+use crate::character::{CharacterPreferences, DamageType, get_tool_proficiency, get_weapon_proficiency, MechanicCategory, MechanicLevel, Vantage};
 
 #[derive(Debug)]
 pub enum SubClass {
@@ -104,7 +104,16 @@ pub fn new_dwarven_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits
         category: "help".to_string(),
         specific_effect: vec! {"hit_points".to_string()},
         range: vec!{"all".to_string()},
-        mechanic: vec!{"1 hit point".to_string()},
+        // mechanic: vec!{"1 hit point".to_string()},
+        mechanic: vec!{
+            MechanicLevel {
+                level: 1,
+                roll_multiplier: None,
+                roll_die: None,
+                adjustment: Some(1),
+                category: MechanicCategory::HitPoints,
+            }
+        },
         availability: vec!{"per level".to_string()}
     };
     hit_points.insert("poison".to_string(), ability1);
@@ -253,41 +262,18 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
      */
 
     let mut proficiencies: HashMap<String, CharacterAbility> = HashMap::new();
-    proficiencies.insert("battleaxe".to_string(), CharacterAbility{
-        ability_name: "dwarven combat training".to_string(),
-        category: "proficiencies".to_string(),
-        specific_effect: vec!{"weapon".to_string()},
-        range: vec!{"all".to_string()},
-        mechanic: vec!{"battleaxe".to_string()},
-        availability: vec!{"always".to_string()}
-    });
-
-    proficiencies.insert("handaxe".to_string(),  CharacterAbility{
-        ability_name: "dwarven combat training".to_string(),
-        category: "proficiencies".to_string(),
-        specific_effect: vec!{"weapon".to_string()},
-        range: vec!{"all".to_string()},
-        mechanic: vec!{"handaxe".to_string()},
-        availability: vec!{"always".to_string()}
-    });
-
-    proficiencies.insert("light hammer".to_string(), CharacterAbility{
-        ability_name: "dwarven combat training".to_string(),
-        category: "proficiencies".to_string(),
-        specific_effect: vec!{"weapon".to_string()},
-        range: vec!{"all".to_string()},
-        mechanic: vec!{"light hammer".to_string()},
-        availability: vec!{"always".to_string()}
-    });
-
-    proficiencies.insert("war hammer".to_string(), CharacterAbility{
-        ability_name: "dwarven combat training".to_string(),
-        category: "proficiencies".to_string(),
-        specific_effect: vec!{"weapon".to_string()},
-        range: vec!{"all".to_string()},
-        mechanic: vec!{"war hammer".to_string()},
-        availability: vec!{"always".to_string()}
-    });
+    proficiencies.insert("battleaxe".to_string(),
+                         get_weapon_proficiency("dwarven combat training".to_string(),
+                                                "battleaxe".to_string()));
+    proficiencies.insert("handaxe".to_string(),
+                         get_weapon_proficiency("dwarven combat training".to_string(),
+                                                "handaxe".to_string()));
+    proficiencies.insert("light hammer".to_string(),
+                     get_weapon_proficiency("dwarven combat training".to_string(),
+                                            "light hammer".to_string()));
+    proficiencies.insert("war hammer".to_string(),
+                     get_weapon_proficiency("dwarven combat training".to_string(),
+                                            "war hammer".to_string()));
 
 
     let tool_proficiency = get_random_string(vec!{
@@ -296,14 +282,9 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
         "mechanic’s tools".to_string(),
         "mason’s tools".to_string()}, "smith's tools".to_string());
 
-    proficiencies.insert(tool_proficiency.clone(),  CharacterAbility{
-        ability_name: "tool proficiency".to_string(),
-        category: "proficiencies".to_string(),
-        specific_effect: vec!{"tool".to_string()},
-        range: vec!{"all".to_string()},
-        mechanic: vec!{tool_proficiency.clone()},
-        availability: vec!{"always".to_string()}
-    });
+    proficiencies.insert(tool_proficiency.clone(),
+                         get_tool_proficiency("tool proficiency".to_string(),
+                                              tool_proficiency.clone()));
 
     cultural_abilities.insert("languages".to_string(), languages);
     cultural_abilities.insert("proficiencies".to_string(), proficiencies);
@@ -311,13 +292,12 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
     let base_values = BaseCulturalTraits {
         alignments: set_alignments(45,5,5,15,5,5,10,5,5),
         tool_proficiency_choices: Some(vec!{
-            "smith’s tools".to_string(),
-            "brewer’s supplies".to_string(),
-            "mechanic’s tools".to_string(),
-            "mason’s tools".to_string()}),
+        "smith’s tools".to_string(),
+        "brewer’s supplies".to_string(),
+        "mechanic’s tools".to_string(),
+        "mason’s tools".to_string()}),
         ability_bonuses: set_ability_bonuses(0,0,2,0,1,0),
         abilities: cultural_abilities,
-
     };
 
     CulturalTraits::combiner(prefs, &base_values);
@@ -338,55 +318,55 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
 
 #[cfg(test)]
 mod tests {
-    use crate::ancestry::{AncestralTraits, CulturalTraits};
-    use crate::character::CharacterPreferences;
+use crate::ancestry::{AncestralTraits, CulturalTraits};
+use crate::character::CharacterPreferences;
 
 
-    #[test]
-    fn test_hill_dwarf_ancestry() {
-        let mut prefs = CharacterPreferences {
-            ancestry: "hill dwarf".to_string(),
-            ..CharacterPreferences::default()
-        };
-        let db = AncestralTraits::new(&mut prefs);
-        assert_eq!(db.name, "hill dwarf".to_string());
-        assert_eq!(db.parent_name, "dwarf".to_string());
-        assert!(db.age >= 50 && db.age <= 400, "Expected 50..400, got {}", db.age);
-        assert_eq!(db.base_walking_speed, 25);
-        assert!(db.height > 48 && db.height <= 60, "Expected 48..60, got {}", db.height);
-        assert!(db.weight > 138 && db.weight <= 182, "Expected 138..182, got {}", db.weight);
-        assert!(db.skin_tone.len() > 0, "Skin tone is empty");
-        assert!(db.hair_color.len() > 0, "Hair color is empty");
-        assert!(db.hair_type.len() > 0, "Hair type is empty");
-        assert!(db.eye_color.len() > 0, "Eye color is empty");
-        let result = db.abilities.get("resistances")
-            .and_then(|b| b.get("poison")).unwrap();
+#[test]
+fn test_hill_dwarf_ancestry() {
+let mut prefs = CharacterPreferences {
+ancestry: "hill dwarf".to_string(),
+..CharacterPreferences::default()
+};
+let db = AncestralTraits::new(&mut prefs);
+assert_eq!(db.name, "hill dwarf".to_string());
+assert_eq!(db.parent_name, "dwarf".to_string());
+assert!(db.age >= 50 && db.age <= 400, "Expected 50..400, got {}", db.age);
+assert_eq!(db.base_walking_speed, 25);
+assert!(db.height > 48 && db.height <= 60, "Expected 48..60, got {}", db.height);
+assert!(db.weight > 138 && db.weight <= 182, "Expected 138..182, got {}", db.weight);
+assert!(db.skin_tone.len() > 0, "Skin tone is empty");
+assert!(db.hair_color.len() > 0, "Hair color is empty");
+assert!(db.hair_type.len() > 0, "Hair type is empty");
+assert!(db.eye_color.len() > 0, "Eye color is empty");
+let result = db.abilities.get("resistances")
+.and_then(|b| b.get("poison")).unwrap();
 
-        assert_eq!(result.ability_name, "damage resistance".to_string());
-    }
+assert_eq!(result.ability_name, "damage resistance".to_string());
+}
 
-    #[test]
-    fn test_hill_dwarf_culture() {
-        let mut prefs = CharacterPreferences {
-            ancestry:  "hill dwarf".to_string(),
-            alignment: Some("chaotic neutral".to_string()),
-            ..CharacterPreferences::default()
-        };
-        let db = CulturalTraits::new(&mut prefs);
-        assert_eq!(db.name, "hill dwarf".to_string());
-        assert_eq!(db.parent_name, "dwarf".to_string());
-        assert_eq!(db.alignment, "chaotic neutral".to_string());
-        assert_eq!(db.abilities.len(), 2);
+#[test]
+fn test_hill_dwarf_culture() {
+let mut prefs = CharacterPreferences {
+ancestry:  "hill dwarf".to_string(),
+alignment: Some("chaotic neutral".to_string()),
+..CharacterPreferences::default()
+};
+let db = CulturalTraits::new(&mut prefs);
+assert_eq!(db.name, "hill dwarf".to_string());
+assert_eq!(db.parent_name, "dwarf".to_string());
+assert_eq!(db.alignment, "chaotic neutral".to_string());
+assert_eq!(db.abilities.len(), 2);
 
-        let common = &db.abilities["languages"]["common"];
-        assert_eq!(common.ability_name,
-                   "ancestral language".to_string());
-        assert_eq!(common.range.len(), 3);
-        assert!(common.range.contains(&"read".to_string()), "read value was not found");
-        let dwarvish = &db.abilities["languages"]["dwarvish"];
-        assert_eq!(dwarvish.ability_name,
-                   "ancestral language".to_string());
-        assert_eq!(dwarvish.range.len(), 3);
-        assert!(dwarvish.range.contains(&"read".to_string()), "read value was not found");
-    }
+let common = &db.abilities["languages"]["common"];
+assert_eq!(common.ability_name,
+"ancestral language".to_string());
+assert_eq!(common.range.len(), 3);
+assert!(common.range.contains(&"read".to_string()), "read value was not found");
+let dwarvish = &db.abilities["languages"]["dwarvish"];
+assert_eq!(dwarvish.ability_name,
+"ancestral language".to_string());
+assert_eq!(dwarvish.range.len(), 3);
+assert!(dwarvish.range.contains(&"read".to_string()), "read value was not found");
+}
 }
