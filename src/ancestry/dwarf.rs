@@ -1,4 +1,3 @@
-
 /*
 Dwarf
 The origins of dwarves are shrouded in myth, with some saying that their ancestors were fashioned
@@ -28,13 +27,19 @@ gain a level, due in large part to the long history of difficult labor required 
 underground for generations.
 */
 
-
-use std::collections::HashMap;
+use crate::ancestry::{
+    get_i16_some_value, get_lc_some_value, get_random_string, set_ability_bonuses, set_alignments,
+    AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits,
+    LanguageTraits,
+};
+use crate::character::{
+    get_check_proficiency, get_tool_proficiency, get_weapon_proficiency, CharacterPreferences,
+    DamageType, EffectValueRange, MechanicCategory, MechanicLevel, Vantage,
+};
 use rand::distributions::Standard;
 use rand::prelude::Distribution;
 use rand::Rng;
-use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, get_i16_some_value, get_lc_some_value, get_random_string, LanguageTraits, set_ability_bonuses, set_alignments};
-use crate::character::{CharacterPreferences, DamageType, EffectValueRange, get_check_proficiency, get_tool_proficiency, get_weapon_proficiency, MechanicCategory, MechanicLevel, Vantage};
+use std::collections::HashMap;
 
 #[derive(Debug)]
 pub enum SubClass {
@@ -51,12 +56,12 @@ impl Distribution<SubClass> for Standard {
 
 fn confirm_sub_class(src: String) -> SubClass {
     return match src.to_lowercase().as_str() {
-        "hill dwarf"  => SubClass::Hill ,
+        "hill dwarf" => SubClass::Hill,
         _ => {
-            let target:SubClass  = rand::random();
+            let target: SubClass = rand::random();
             target
-        },
-    }
+        }
+    };
 }
 
 pub fn new_dwarven_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits {
@@ -85,13 +90,12 @@ pub fn new_dwarven_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits
     let ability1 = BaseAncestralTraits::get_saving_throw(
         "dwarven resilience".to_string(),
         Vantage::Advantage,
-        DamageType::Poison);
+        DamageType::Poison,
+    );
 
     saving_throws.insert("poison".to_string(), ability1);
 
-    let resistances =
-        BaseAncestralTraits::add_resistances(vec!{"poison".to_string()});
-
+    let resistances = BaseAncestralTraits::add_resistances(vec!["poison".to_string()]);
 
     /*
         Dwarven Toughness. Your hit point maximum increases by 1, and it increases by 1 every time you
@@ -99,24 +103,22 @@ pub fn new_dwarven_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits
     underground for generations.
     */
     let mut hit_points: HashMap<String, CharacterAbility> = HashMap::new();
-    let ability1 = CharacterAbility{
+    let ability1 = CharacterAbility {
         ability_name: "dwarven toughness".to_string(),
         category: "help".to_string(),
-        specific_effect: vec! {"hit_points".to_string()},
-        range: vec!{"all".to_string()},
-        mechanic: vec!{
-            MechanicLevel {
-                level: 1,
-                effect_range: Some(EffectValueRange {
-                    roll_multiplier: None,
-                    roll_die: None,
-                    adjustment: Some(1),
-                    effect_type: Some(DamageType::None),
-                }),
-                category: MechanicCategory::HitPoints,
-            }
-        },
-        availability: vec!{"per level".to_string()}
+        specific_effect: vec!["hit_points".to_string()],
+        range: vec!["all".to_string()],
+        mechanic: vec![MechanicLevel {
+            level: 1,
+            effect_range: Some(EffectValueRange {
+                roll_multiplier: None,
+                roll_die: None,
+                adjustment: Some(1),
+                effect_type: Some(DamageType::None),
+            }),
+            category: MechanicCategory::HitPoints,
+        }],
+        availability: vec!["per level".to_string()],
     };
     hit_points.insert("poison".to_string(), ability1);
 
@@ -124,7 +126,6 @@ pub fn new_dwarven_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits
     ancestry_abilities.insert("saving_throws".to_string(), saving_throws);
     ancestry_abilities.insert("resistances".to_string(), resistances);
     ancestry_abilities.insert("hit_points".to_string(), hit_points);
-
 
     let base_values = BaseAncestralTraits {
         name,
@@ -141,37 +142,38 @@ pub fn new_dwarven_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits
         weight_modifier_die: 12,
         weight_modifier_adj: 0,
         base_size: "medium".to_string(),
-        skin_tones: vec! {
+        skin_tones: vec![
             "tan".to_string(),
             "brown".to_string(),
             "beige".to_string(),
-            "black".to_string()
-        },
-        hair_colors: vec! {
+            "black".to_string(),
+        ],
+        hair_colors: vec![
             "black".to_string(),
             "brown".to_string(),
             "auburn".to_string(),
             "red".to_string(),
-            "grey".to_string()
-        },
-        hair_types: vec! {
+            "grey".to_string(),
+        ],
+        hair_types: vec![
             "curly".to_string(),
             "wavy".to_string(),
             "straight".to_string(),
-        },
-        eye_colors: vec! {
+        ],
+        eye_colors: vec![
             "brown".to_string(),
             "black".to_string(),
             "grey".to_string(),
             "green".to_string(),
-            "bloodshot".to_string()
-        },
+            "bloodshot".to_string(),
+        ],
         abilities: ancestry_abilities,
         source_material: "SRD".to_string(),
         source_credit_url: {
-            "https://www.dndbeyond.com/attachments/39j2li89/SRD5.1-CCBY4.0_License_live%20links.pdf".to_string()
+            "https://www.dndbeyond.com/attachments/39j2li89/SRD5.1-CCBY4.0_License_live%20links.pdf"
+                .to_string()
         },
-        source_credit_comment: "As of 2023/03/25".to_string()
+        source_credit_comment: "As of 2023/03/25".to_string(),
     };
 
     let base_size = base_values.get_base_size();
@@ -201,7 +203,7 @@ pub fn new_dwarven_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits
     }
 }
 
-    /*
+/*
 Cultural Traits
 Hill Dwarf
 Characters who grows up in a hill dwarven community take on several distinctive cultural traits,
@@ -233,27 +235,25 @@ might speak.
 */
 
 pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
-
     let parent_name = "dwarf".to_string();
     let sub_class = confirm_sub_class(prefs.ancestry.clone());
     let combined_name = format!("{:?} {}", sub_class, parent_name.clone()).to_lowercase();
     let mut cultural_abilities: HashMap<String, HashMap<String, CharacterAbility>> = HashMap::new();
 
-    let languages = BaseCulturalTraits::add_languages(
-        vec![
-            LanguageTraits {
-                name: "common".to_string(),
-                can_read: true,
-                can_speak: true,
-                can_write: true,
-            },
-            LanguageTraits {
-                name: "dwarvish".to_string(),
-                can_read: true,
-                can_speak: true,
-                can_write: true,
-            },
-        ]);
+    let languages = BaseCulturalTraits::add_languages(vec![
+        LanguageTraits {
+            name: "common".to_string(),
+            can_read: true,
+            can_speak: true,
+            can_write: true,
+        },
+        LanguageTraits {
+            name: "dwarvish".to_string(),
+            can_read: true,
+            can_speak: true,
+            can_write: true,
+        },
+    ]);
 
     /*
     Dwarven Combat Training. You have proficiency with the battleaxe, handaxe, light hammer,
@@ -264,122 +264,163 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
      */
 
     let mut proficiencies: HashMap<String, CharacterAbility> = HashMap::new();
-    proficiencies.insert("battleaxe".to_string(),
-                         get_weapon_proficiency("dwarven combat training".to_string(),
-                                                "battleaxe".to_string()));
-    proficiencies.insert("handaxe".to_string(),
-                         get_weapon_proficiency("dwarven combat training".to_string(),
-                                                "handaxe".to_string()));
-    proficiencies.insert("light hammer".to_string(),
-                     get_weapon_proficiency("dwarven combat training".to_string(),
-                                            "light hammer".to_string()));
-    proficiencies.insert("war hammer".to_string(),
-                     get_weapon_proficiency("dwarven combat training".to_string(),
-                                            "war hammer".to_string()));
+    proficiencies.insert(
+        "battleaxe".to_string(),
+        get_weapon_proficiency(
+            "dwarven combat training".to_string(),
+            "battleaxe".to_string(),
+        ),
+    );
+    proficiencies.insert(
+        "handaxe".to_string(),
+        get_weapon_proficiency("dwarven combat training".to_string(), "handaxe".to_string()),
+    );
+    proficiencies.insert(
+        "light hammer".to_string(),
+        get_weapon_proficiency(
+            "dwarven combat training".to_string(),
+            "light hammer".to_string(),
+        ),
+    );
+    proficiencies.insert(
+        "war hammer".to_string(),
+        get_weapon_proficiency(
+            "dwarven combat training".to_string(),
+            "war hammer".to_string(),
+        ),
+    );
 
+    let tool_proficiency = get_random_string(
+        vec![
+            "smith’s tools".to_string(),
+            "brewer’s supplies".to_string(),
+            "mechanic’s tools".to_string(),
+            "mason’s tools".to_string(),
+        ],
+        "smith's tools".to_string(),
+    );
 
-    let tool_proficiency = get_random_string(vec!{
-        "smith’s tools".to_string(),
-        "brewer’s supplies".to_string(),
-        "mechanic’s tools".to_string(),
-        "mason’s tools".to_string()}, "smith's tools".to_string());
+    proficiencies.insert(
+        tool_proficiency.clone(),
+        get_tool_proficiency("tool proficiency".to_string(), tool_proficiency.clone()),
+    );
+    /*
+       Stonecunning. Whenever you make an Intelligence (History) check related to the origin of stonework,
+       you are considered proficient in the History skill and add double your proficiency bonus to the
+       check, instead of your normal proficiency bonus.
+    */
+    proficiencies.insert(
+        "history".to_string(),
+        get_check_proficiency(
+            "stonecunning".to_string(),
+            "history".to_string(),
+            "specific to stonework".to_string(),
+            MechanicCategory::DoubleProficiencyBonus,
+            None,
+        ),
+    );
 
-    proficiencies.insert(tool_proficiency.clone(),
-                         get_tool_proficiency("tool proficiency".to_string(),
-                                              tool_proficiency.clone()));
-/*
-    Stonecunning. Whenever you make an Intelligence (History) check related to the origin of stonework,
-    you are considered proficient in the History skill and add double your proficiency bonus to the
-    check, instead of your normal proficiency bonus.
- */
-    proficiencies.insert("history".to_string(),
-                         get_check_proficiency("stonecunning".to_string(),
-                                               "history".to_string(),
-                                               "specific to stonework".to_string(),
-                                               MechanicCategory::DoubleProficiencyBonus,
-                                               None));
-    
-cultural_abilities.insert("languages".to_string(), languages);
-cultural_abilities.insert("proficiencies".to_string(), proficiencies);
+    cultural_abilities.insert("languages".to_string(), languages);
+    cultural_abilities.insert("proficiencies".to_string(), proficiencies);
 
-let base_values = BaseCulturalTraits {
-    alignments: set_alignments(45,5,5,15,5,5,10,5,5),
-    tool_proficiency_choices: Some(vec!{
-    "smith’s tools".to_string(),
-    "brewer’s supplies".to_string(),
-    "mechanic’s tools".to_string(),
-    "mason’s tools".to_string()}),
-    ability_bonuses: set_ability_bonuses(0,0,2,0,1,0),
-    abilities: cultural_abilities,
-};
+    let base_values = BaseCulturalTraits {
+        alignments: set_alignments(45, 5, 5, 15, 5, 5, 10, 5, 5),
+        tool_proficiency_choices: Some(vec![
+            "smith’s tools".to_string(),
+            "brewer’s supplies".to_string(),
+            "mechanic’s tools".to_string(),
+            "mason’s tools".to_string(),
+        ]),
+        ability_bonuses: set_ability_bonuses(0, 0, 2, 0, 1, 0),
+        abilities: cultural_abilities,
+    };
 
-CulturalTraits::combiner(prefs, &base_values);
+    CulturalTraits::combiner(prefs, &base_values);
 
-CulturalTraits {
-    name: combined_name,
-    parent_name,
-    alignment: get_lc_some_value(prefs.alignment.clone(), "true neutral".to_string()),
-    ability_bonuses: base_values.ability_bonuses,
-    abilities: base_values.abilities,
-    source_material: { "SRD".to_string() },
-    source_credit_url: {
-        "https://www.dndbeyond.com/attachments/39j2li89/SRD5.1-CCBY4.0_License_live%20links.pdf".to_string()
-    },
-    source_credit_comment: {"As of 2023/03/25".to_string() }
-}
+    CulturalTraits {
+        name: combined_name,
+        parent_name,
+        alignment: get_lc_some_value(prefs.alignment.clone(), "true neutral".to_string()),
+        ability_bonuses: base_values.ability_bonuses,
+        abilities: base_values.abilities,
+        source_material: { "SRD".to_string() },
+        source_credit_url: {
+            "https://www.dndbeyond.com/attachments/39j2li89/SRD5.1-CCBY4.0_License_live%20links.pdf"
+                .to_string()
+        },
+        source_credit_comment: { "As of 2023/03/25".to_string() },
+    }
 }
 
 #[cfg(test)]
 mod tests {
-use crate::ancestry::{AncestralTraits, CulturalTraits};
-use crate::character::CharacterPreferences;
+    use crate::ancestry::{AncestralTraits, CulturalTraits};
+    use crate::character::CharacterPreferences;
 
+    #[test]
+    fn test_hill_dwarf_ancestry() {
+        let mut prefs = CharacterPreferences {
+            ancestry: "hill dwarf".to_string(),
+            ..CharacterPreferences::default()
+        };
+        let db = AncestralTraits::new(&mut prefs);
+        assert_eq!(db.name, "hill dwarf".to_string());
+        assert_eq!(db.parent_name, "dwarf".to_string());
+        assert!(
+            db.age >= 50 && db.age <= 400,
+            "Expected 50..400, got {}",
+            db.age
+        );
+        assert_eq!(db.base_walking_speed, 25);
+        assert!(
+            db.height > 48 && db.height <= 60,
+            "Expected 48..60, got {}",
+            db.height
+        );
+        assert!(
+            db.weight > 138 && db.weight <= 182,
+            "Expected 138..182, got {}",
+            db.weight
+        );
+        assert!(db.skin_tone.len() > 0, "Skin tone is empty");
+        assert!(db.hair_color.len() > 0, "Hair color is empty");
+        assert!(db.hair_type.len() > 0, "Hair type is empty");
+        assert!(db.eye_color.len() > 0, "Eye color is empty");
+        let result = db
+            .abilities
+            .get("resistances")
+            .and_then(|b| b.get("poison"))
+            .unwrap();
 
-#[test]
-fn test_hill_dwarf_ancestry() {
-let mut prefs = CharacterPreferences {
-ancestry: "hill dwarf".to_string(),
-..CharacterPreferences::default()
-};
-let db = AncestralTraits::new(&mut prefs);
-assert_eq!(db.name, "hill dwarf".to_string());
-assert_eq!(db.parent_name, "dwarf".to_string());
-assert!(db.age >= 50 && db.age <= 400, "Expected 50..400, got {}", db.age);
-assert_eq!(db.base_walking_speed, 25);
-assert!(db.height > 48 && db.height <= 60, "Expected 48..60, got {}", db.height);
-assert!(db.weight > 138 && db.weight <= 182, "Expected 138..182, got {}", db.weight);
-assert!(db.skin_tone.len() > 0, "Skin tone is empty");
-assert!(db.hair_color.len() > 0, "Hair color is empty");
-assert!(db.hair_type.len() > 0, "Hair type is empty");
-assert!(db.eye_color.len() > 0, "Eye color is empty");
-let result = db.abilities.get("resistances")
-.and_then(|b| b.get("poison")).unwrap();
+        assert_eq!(result.ability_name, "damage resistance".to_string());
+    }
 
-assert_eq!(result.ability_name, "damage resistance".to_string());
-}
+    #[test]
+    fn test_hill_dwarf_culture() {
+        let mut prefs = CharacterPreferences {
+            ancestry: "hill dwarf".to_string(),
+            alignment: Some("chaotic neutral".to_string()),
+            ..CharacterPreferences::default()
+        };
+        let db = CulturalTraits::new(&mut prefs);
+        assert_eq!(db.name, "hill dwarf".to_string());
+        assert_eq!(db.parent_name, "dwarf".to_string());
+        assert_eq!(db.alignment, "chaotic neutral".to_string());
+        assert_eq!(db.abilities.len(), 2);
 
-#[test]
-fn test_hill_dwarf_culture() {
-let mut prefs = CharacterPreferences {
-ancestry:  "hill dwarf".to_string(),
-alignment: Some("chaotic neutral".to_string()),
-..CharacterPreferences::default()
-};
-let db = CulturalTraits::new(&mut prefs);
-assert_eq!(db.name, "hill dwarf".to_string());
-assert_eq!(db.parent_name, "dwarf".to_string());
-assert_eq!(db.alignment, "chaotic neutral".to_string());
-assert_eq!(db.abilities.len(), 2);
-
-let common = &db.abilities["languages"]["common"];
-assert_eq!(common.ability_name,
-"ancestral language".to_string());
-assert_eq!(common.range.len(), 3);
-assert!(common.range.contains(&"read".to_string()), "read value was not found");
-let dwarvish = &db.abilities["languages"]["dwarvish"];
-assert_eq!(dwarvish.ability_name,
-"ancestral language".to_string());
-assert_eq!(dwarvish.range.len(), 3);
-assert!(dwarvish.range.contains(&"read".to_string()), "read value was not found");
-}
+        let common = &db.abilities["languages"]["common"];
+        assert_eq!(common.ability_name, "ancestral language".to_string());
+        assert_eq!(common.range.len(), 3);
+        assert!(
+            common.range.contains(&"read".to_string()),
+            "read value was not found"
+        );
+        let dwarvish = &db.abilities["languages"]["dwarvish"];
+        assert_eq!(dwarvish.ability_name, "ancestral language".to_string());
+        assert_eq!(dwarvish.range.len(), 3);
+        assert!(
+            dwarvish.range.contains(&"read".to_string()),
+            "read value was not found"
+        );
+    }
 }

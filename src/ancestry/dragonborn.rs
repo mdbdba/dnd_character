@@ -47,12 +47,18 @@ Damage Resistance. You have resistance to the damage type associated with your d
 
 */
 
-use std::collections::HashMap;
+use crate::ancestry::{
+    get_i16_some_value, get_lc_some_value, set_ability_bonuses, set_alignments, AncestralTraits,
+    BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, LanguageTraits,
+};
+use crate::character::{
+    get_check_proficiency, get_damage_enum, CharacterPreferences, EffectValueRange,
+    MechanicCategory, MechanicLevel,
+};
 use rand::distributions::Standard;
 use rand::prelude::Distribution;
 use rand::Rng;
-use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, get_i16_some_value, get_lc_some_value, LanguageTraits, set_ability_bonuses, set_alignments};
-use crate::character::{CharacterPreferences, EffectValueRange, get_check_proficiency, get_damage_enum, MechanicCategory, MechanicLevel};
+use std::collections::HashMap;
 
 #[derive(Debug)]
 pub enum DragonbornColor {
@@ -86,23 +92,22 @@ impl Distribution<DragonbornColor> for Standard {
 }
 
 fn confirm_dragonborn_color(src: String) -> DragonbornColor {
-
     return match src.as_str() {
-        "black dragonborn"  => DragonbornColor::Black ,
-        "blue dragonborn"   => DragonbornColor::Blue ,
-        "brass dragonborn"  => DragonbornColor::Brass ,
-        "bronze dragonborn" => DragonbornColor::Bronze ,
-        "copper dragonborn" => DragonbornColor::Copper ,
-        "gold dragonborn"   => DragonbornColor::Gold ,
-        "green dragonborn"  => DragonbornColor::Green ,
-        "red dragonborn"    => DragonbornColor::Red,
-        "silver dragonborn" => DragonbornColor::Silver ,
-        "white dragonborn"  => DragonbornColor::White ,
+        "black dragonborn" => DragonbornColor::Black,
+        "blue dragonborn" => DragonbornColor::Blue,
+        "brass dragonborn" => DragonbornColor::Brass,
+        "bronze dragonborn" => DragonbornColor::Bronze,
+        "copper dragonborn" => DragonbornColor::Copper,
+        "gold dragonborn" => DragonbornColor::Gold,
+        "green dragonborn" => DragonbornColor::Green,
+        "red dragonborn" => DragonbornColor::Red,
+        "silver dragonborn" => DragonbornColor::Silver,
+        "white dragonborn" => DragonbornColor::White,
         _ => {
             let color: DragonbornColor = rand::random();
             color
-        },
-    }
+        }
+    };
 }
 
 pub fn new_dragonborn_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits {
@@ -116,110 +121,109 @@ pub fn new_dragonborn_ancestry(prefs: &mut CharacterPreferences) -> AncestralTra
         DragonbornColor::Black => {
             skin_color = "black scales".to_string();
             resistance = "acid".to_string();
-            effect_range = vec! {
+            effect_range = vec![
                 "5 by 30 foot line".to_string(),
                 "dexterity".to_string(),
-                "half damage".to_string()
-            };
-        },
+                "half damage".to_string(),
+            ];
+        }
         DragonbornColor::Blue => {
             skin_color = "blue scales".to_string();
             resistance = "lightning".to_string();
-            effect_range = vec! {
+            effect_range = vec![
                 "5 by 30 foot line".to_string(),
                 "dexterity".to_string(),
-                "half damage".to_string()
-            };
-        },
+                "half damage".to_string(),
+            ];
+        }
         DragonbornColor::Brass => {
             skin_color = "brass scales".to_string();
             resistance = "fire".to_string();
-            effect_range = vec! {
+            effect_range = vec![
                 "5 by 30 foot line".to_string(),
                 "dexterity".to_string(),
-                "half damage".to_string()
-            };
-        },
+                "half damage".to_string(),
+            ];
+        }
         DragonbornColor::Bronze => {
             skin_color = "bronze scales".to_string();
             resistance = "lightning".to_string();
-            effect_range = vec! {
+            effect_range = vec![
                 "5 by 30 foot line".to_string(),
                 "dexterity".to_string(),
-                "half damage".to_string()
-            };
-        },
+                "half damage".to_string(),
+            ];
+        }
         DragonbornColor::Copper => {
             skin_color = "copper scales".to_string();
             resistance = "acid".to_string();
-            effect_range = vec! {
+            effect_range = vec![
                 "5 by 30 foot line".to_string(),
                 "dexterity".to_string(),
-                "half damage".to_string()
-            };
-        },
+                "half damage".to_string(),
+            ];
+        }
         DragonbornColor::Gold => {
             skin_color = "gold scales".to_string();
             resistance = "fire".to_string();
-            effect_range = vec! {
+            effect_range = vec![
                 "15 foot cone".to_string(),
                 "dexterity".to_string(),
-                "half damage".to_string()
-            };
-        },
+                "half damage".to_string(),
+            ];
+        }
         DragonbornColor::Green => {
             skin_color = "green scales".to_string();
             resistance = "poison".to_string();
-            effect_range = vec! {
+            effect_range = vec![
                 "15 foot cone".to_string(),
                 "constitution".to_string(),
-                "half damage".to_string()
-            };
-        },
+                "half damage".to_string(),
+            ];
+        }
         DragonbornColor::Red => {
             skin_color = "red scales".to_string();
             resistance = "fire".to_string();
-            effect_range = vec! {
+            effect_range = vec![
                 "15 foot cone".to_string(),
                 "dexterity".to_string(),
-                "half damage".to_string()
-            };
-        },
+                "half damage".to_string(),
+            ];
+        }
         DragonbornColor::Silver => {
             skin_color = "silver scales".to_string();
             resistance = "cold".to_string();
-            effect_range = vec! {
+            effect_range = vec![
                 "15 foot cone".to_string(),
                 "constitution".to_string(),
-                "half damage".to_string()
-            };
-        },
-        DragonbornColor::White  => {
+                "half damage".to_string(),
+            ];
+        }
+        DragonbornColor::White => {
             skin_color = "white scales".to_string();
             resistance = "cold".to_string();
-            effect_range = vec! {
+            effect_range = vec![
                 "15 foot cone".to_string(),
                 "constitution".to_string(),
-                "half damage".to_string()
-            };
-        },
+                "half damage".to_string(),
+            ];
+        }
     };
 
     let combined_name = format!("{:?} {}", color, parent_name.clone()).to_lowercase();
 
     let mut ancestry_abilities: HashMap<String, HashMap<String, CharacterAbility>> = HashMap::new();
 
-    let resistances =
-        BaseAncestralTraits::add_resistances(vec!{resistance.clone()});
+    let resistances = BaseAncestralTraits::add_resistances(vec![resistance.clone()]);
 
     let damage_enum = get_damage_enum(resistance.clone());
     let mut offensive: HashMap<String, CharacterAbility> = HashMap::new();
-    let ability1 = CharacterAbility{
+    let ability1 = CharacterAbility {
         ability_name: "breath weapon".to_string(),
         category: "offensive".to_string(),
-        specific_effect: vec! {resistance.clone()},
+        specific_effect: vec![resistance.clone()],
         range: effect_range,
-        mechanic: vec!{
+        mechanic: vec![
             MechanicLevel {
                 level: 1,
                 effect_range: Some(EffectValueRange {
@@ -260,11 +264,8 @@ pub fn new_dragonborn_ancestry(prefs: &mut CharacterPreferences) -> AncestralTra
                 }),
                 category: MechanicCategory::Damage,
             },
-        },
-        availability: vec!{
-            "short rest".to_string(),
-            "long rest".to_string()
-        }
+        ],
+        availability: vec!["short rest".to_string(), "long rest".to_string()],
     };
     offensive.insert("breath weapon".to_string(), ability1);
 
@@ -286,11 +287,17 @@ pub fn new_dragonborn_ancestry(prefs: &mut CharacterPreferences) -> AncestralTra
         weight_modifier_die: 12,
         weight_modifier_adj: 0,
         base_size: "medium".to_string(),
-        skin_tones:  { vec! {skin_color} },
-        hair_colors: { vec! {"none".to_string()} },
-        hair_types:  { vec! {"none".to_string()} },
-        eye_colors:  {
-            vec! {
+        skin_tones: {
+            vec![skin_color]
+        },
+        hair_colors: {
+            vec!["none".to_string()]
+        },
+        hair_types: {
+            vec!["none".to_string()]
+        },
+        eye_colors: {
+            vec![
                 "purple".to_string(),
                 "red".to_string(),
                 "orange".to_string(),
@@ -298,17 +305,18 @@ pub fn new_dragonborn_ancestry(prefs: &mut CharacterPreferences) -> AncestralTra
                 "blue".to_string(),
                 "gray".to_string(),
                 "silver".to_string(),
-                "black".to_string()
-            }
+                "black".to_string(),
+            ]
         },
         abilities: ancestry_abilities,
         source_material: { "SRD".to_string() },
         source_credit_url: {
-            "https://www.dndbeyond.com/attachments/39j2li89/SRD5.1-CCBY4.0_License_live%20links.pdf".to_string()
+            "https://www.dndbeyond.com/attachments/39j2li89/SRD5.1-CCBY4.0_License_live%20links.pdf"
+                .to_string()
         },
-        source_credit_comment: {"As of 2023/03/25".to_string() }
+        source_credit_comment: { "As of 2023/03/25".to_string() },
     };
-    let name= base_values.get_name();
+    let name = base_values.get_name();
     let parent_name = base_values.get_parent_name();
     let base_size = base_values.get_base_size();
     let base_walking_speed = base_values.get_base_walking_speed();
@@ -316,7 +324,6 @@ pub fn new_dragonborn_ancestry(prefs: &mut CharacterPreferences) -> AncestralTra
     AncestralTraits::combiner(prefs, &base_values);
 
     let wonderful = "wonderful".to_string();
-
 
     AncestralTraits {
         name,
@@ -327,9 +334,9 @@ pub fn new_dragonborn_ancestry(prefs: &mut CharacterPreferences) -> AncestralTra
         height: get_i16_some_value(prefs.height, base_values.get_height()),
         weight: get_i16_some_value(prefs.weight, base_values.get_weight()),
         skin_tone: get_lc_some_value(prefs.skin_tone.clone(), wonderful.clone()),
-        hair_color: get_lc_some_value(prefs.hair_color.clone(),wonderful.clone()),
-        hair_type: get_lc_some_value(prefs.hair_type.clone(),wonderful.clone()),
-        eye_color: get_lc_some_value(prefs.eye_color.clone(),wonderful.clone()),
+        hair_color: get_lc_some_value(prefs.hair_color.clone(), wonderful.clone()),
+        hair_type: get_lc_some_value(prefs.hair_type.clone(), wonderful.clone()),
+        eye_color: get_lc_some_value(prefs.eye_color.clone(), wonderful.clone()),
         abilities: base_values.abilities,
         source_material: base_values.source_material,
         source_credit_url: base_values.source_credit_url,
@@ -362,62 +369,44 @@ on any Intelligence checks to recall information about dragons.
 */
 
 pub fn new_dragonborn_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
-
     let parent_name = "dragonborn".to_string();
     let color = confirm_dragonborn_color(prefs.ancestry.clone());
     let combined_name = format!("{:?} {}", color, parent_name.clone()).to_lowercase();
     let mut cultural_abilities: HashMap<String, HashMap<String, CharacterAbility>> = HashMap::new();
 
-    let languages = BaseCulturalTraits::add_languages(
-        vec![
-            LanguageTraits {
-                name: "common".to_string(),
-                can_read: true,
-                can_speak: true,
-                can_write: true,
-            },
-            LanguageTraits {
-                name: "draconic".to_string(),
-                can_read: true,
-                can_speak: true,
-                can_write: true,
-            },
-        ]);
+    let languages = BaseCulturalTraits::add_languages(vec![
+        LanguageTraits {
+            name: "common".to_string(),
+            can_read: true,
+            can_speak: true,
+            can_write: true,
+        },
+        LanguageTraits {
+            name: "draconic".to_string(),
+            can_read: true,
+            can_speak: true,
+            can_write: true,
+        },
+    ]);
 
     let mut checks: HashMap<String, CharacterAbility> = HashMap::new();
-    let ability1 = get_check_proficiency("dragon lore".to_string(),
-                                         "intelligence".to_string(),
-                                         "specific to dragons".to_string(),
-                                         MechanicCategory::Advantage,
-                                         None);
-        /*
-        CharacterAbility{
-        ability_name: "dragon lore".to_string(),
-        category: "checks".to_string(),
-        specific_effect: vec!{"intelligence".to_string()},
-        range: vec!{"none".to_string()},
-        mechanic: vec!{
-            MechanicLevel {
-                level: 1,
-                effect_range: None,
-                category: MechanicCategory::Advantage,
-            }
-        },
-        availability: vec!{"specific to dragons".to_string()}
-    };
-    */
+    let ability1 = get_check_proficiency(
+        "dragon lore".to_string(),
+        "intelligence".to_string(),
+        "specific to dragons".to_string(),
+        MechanicCategory::Advantage,
+        None,
+    );
     checks.insert("intelligence".to_string(), ability1);
-
 
     cultural_abilities.insert("languages".to_string(), languages);
     cultural_abilities.insert("checks".to_string(), checks);
 
     let base_values = BaseCulturalTraits {
-        alignments: set_alignments(30,10,4,4,4,10,4,4,30),
+        alignments: set_alignments(30, 10, 4, 4, 4, 10, 4, 4, 30),
         tool_proficiency_choices: None,
-        ability_bonuses: set_ability_bonuses(2,0,0,0,0,1),
+        ability_bonuses: set_ability_bonuses(2, 0, 0, 0, 0, 1),
         abilities: cultural_abilities,
-
     };
 
     CulturalTraits::combiner(prefs, &base_values);
@@ -430,24 +419,22 @@ pub fn new_dragonborn_culture(prefs: &mut CharacterPreferences) -> CulturalTrait
         abilities: base_values.abilities,
         source_material: { "SRD".to_string() },
         source_credit_url: {
-            "https://www.dndbeyond.com/attachments/39j2li89/SRD5.1-CCBY4.0_License_live%20links.pdf".to_string()
+            "https://www.dndbeyond.com/attachments/39j2li89/SRD5.1-CCBY4.0_License_live%20links.pdf"
+                .to_string()
         },
-        source_credit_comment: {"As of 2023/03/25".to_string() }
+        source_credit_comment: { "As of 2023/03/25".to_string() },
     }
-
 }
-
 
 #[cfg(test)]
 mod tests {
     use crate::ancestry::{AncestralTraits, CulturalTraits};
     use crate::character::CharacterPreferences;
 
-
     #[test]
     fn test_black_dragonborn_ancestry() {
         let mut prefs = CharacterPreferences {
-            ancestry:  "black dragonborn".to_string(),
+            ancestry: "black dragonborn".to_string(),
             ..CharacterPreferences::default()
         };
         let db = AncestralTraits::new(&mut prefs);
@@ -455,21 +442,32 @@ mod tests {
         assert_eq!(db.parent_name, "dragonborn".to_string());
         assert!(db.age >= 15 && db.age <= 80, "Expected 15, got {}", db.age);
         assert_eq!(db.base_walking_speed, 30);
-        assert!(db.height > 70 && db.height <=82, "Expected between 70..82, got {}", db.height);
-        assert!(db.weight > 180 && db.weight <=250, "Expected between 180..250, got {}", db.weight);
-        assert!(db.skin_tone.len() > 0, "Skin tone is empty" );
-        assert!(db.hair_color.len() > 0, "Hair color is empty" );
-        assert!(db.hair_type.len() > 0, "Hair type is empty" );
-        assert!(db.eye_color.len() > 0, "Eye color is empty" );
-        let result = db.abilities.get("resistances")
-            .and_then(|b| b.get("acid")).unwrap();
+        assert!(
+            db.height > 70 && db.height <= 82,
+            "Expected between 70..82, got {}",
+            db.height
+        );
+        assert!(
+            db.weight > 180 && db.weight <= 250,
+            "Expected between 180..250, got {}",
+            db.weight
+        );
+        assert!(db.skin_tone.len() > 0, "Skin tone is empty");
+        assert!(db.hair_color.len() > 0, "Hair color is empty");
+        assert!(db.hair_type.len() > 0, "Hair type is empty");
+        assert!(db.eye_color.len() > 0, "Eye color is empty");
+        let result = db
+            .abilities
+            .get("resistances")
+            .and_then(|b| b.get("acid"))
+            .unwrap();
 
         assert_eq!(result.ability_name, "damage resistance".to_string());
     }
     #[test]
     fn test_blue_dragonborn_ancestry() {
         let mut prefs = CharacterPreferences {
-            ancestry:  "blue dragonborn".to_string(),
+            ancestry: "blue dragonborn".to_string(),
             ..CharacterPreferences::default()
         };
         let db = AncestralTraits::new(&mut prefs);
@@ -479,25 +477,31 @@ mod tests {
     }
     #[test]
     fn test_random_dragonborn_ancestry() {
-
         let mut prefs = CharacterPreferences {
-            ancestry:  "dragonborn".to_string(),
+            ancestry: "dragonborn".to_string(),
             ..CharacterPreferences::default()
         };
         let db = AncestralTraits::new(&mut prefs);
         assert_eq!(db.parent_name, "dragonborn".to_string());
-        assert!(db.name.len() > 12, "Expecting anything with dragonborn: found {}", db.name);
+        assert!(
+            db.name.len() > 12,
+            "Expecting anything with dragonborn: found {}",
+            db.name
+        );
     }
     #[test]
     fn test_default_ancestry() {
-
         let mut prefs = CharacterPreferences {
-            ancestry:  "born free".to_string(),
+            ancestry: "born free".to_string(),
             ..CharacterPreferences::default()
         };
         let db = AncestralTraits::new(&mut prefs);
         assert_eq!(db.parent_name, "dragonborn".to_string());
-        assert!(db.name.len() > 12, "Expecting anything with dragonborn: found {}", db.name);
+        assert!(
+            db.name.len() > 12,
+            "Expecting anything with dragonborn: found {}",
+            db.name
+        );
     }
 
     #[test]
@@ -515,7 +519,7 @@ mod tests {
             hair_type: Some("bald".to_string()),
             hair_color: Some("none".to_string()),
             abilities: None,
-            tool_proficiencies: None
+            tool_proficiencies: None,
         };
         let db = AncestralTraits::new(&mut prefs);
         assert_eq!(db.name, "silver dragonborn".to_string());
@@ -534,7 +538,7 @@ mod tests {
     #[test]
     fn test_blue_dragonborn_culture() {
         let mut prefs = CharacterPreferences {
-            ancestry:  "blue dragonborn".to_string(),
+            ancestry: "blue dragonborn".to_string(),
             alignment: Some("chaotic neutral".to_string()),
             ..CharacterPreferences::default()
         };
@@ -544,15 +548,19 @@ mod tests {
         assert_eq!(db.alignment, "chaotic neutral".to_string());
         assert_eq!(db.abilities.len(), 2);
         let common = &db.abilities["languages"]["common"];
-        assert_eq!(common.ability_name,
-                   "ancestral language".to_string());
+        assert_eq!(common.ability_name, "ancestral language".to_string());
         assert_eq!(common.range.len(), 3);
-        assert!(common.range.contains(&"read".to_string()), "read value was not found");
+        assert!(
+            common.range.contains(&"read".to_string()),
+            "read value was not found"
+        );
 
         let draconic = &db.abilities["languages"]["draconic"];
-        assert_eq!(draconic.ability_name,
-                   "ancestral language".to_string());
+        assert_eq!(draconic.ability_name, "ancestral language".to_string());
         assert_eq!(draconic.range.len(), 3);
-        assert!(draconic.range.contains(&"read".to_string()), "read value was not found");
+        assert!(
+            draconic.range.contains(&"read".to_string()),
+            "read value was not found"
+        );
     }
 }

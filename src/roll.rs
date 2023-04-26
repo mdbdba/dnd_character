@@ -1,6 +1,5 @@
-use rand::prelude::*;
 use crate::modifier::Modifier;
-
+use rand::prelude::*;
 
 #[derive(Debug, Clone)]
 pub struct Roll {
@@ -11,7 +10,7 @@ pub struct Roll {
     rawrolls: Vec<i16>,
     performed: Vec<i16>,
     subtotal: i16,
-    total: i16
+    total: i16,
 }
 
 impl Roll {
@@ -41,14 +40,9 @@ impl Roll {
     }
 }
 
-pub fn roll_die (
-    sides: i16,
-    rolls: i16,
-    modify: Modifier<i16>,
-    adjustment: i16) -> Roll
-{
-    let mut amounts= Vec::new();
-    let max_range  = sides + 1;
+pub fn roll_die(sides: i16, rolls: i16, modify: Modifier<i16>, adjustment: i16) -> Roll {
+    let mut amounts = Vec::new();
+    let max_range = sides + 1;
     for _ in 0..rolls {
         let result = thread_rng().gen_range(1..max_range);
         amounts.push(result);
@@ -101,12 +95,7 @@ mod tests {
 
     #[test]
     fn test_kl() {
-        let roll = roll_die(
-            6,
-            6,
-            Modifier::KeepLowest(3),
-            0
-        );
+        let roll = roll_die(6, 6, Modifier::KeepLowest(3), 0);
 
         // println!("{:?}", roll.rawrolls);
         // println!("{:?}", roll.performed);
@@ -121,12 +110,7 @@ mod tests {
     }
     #[test]
     fn test_kh() {
-        let roll = roll_die(
-            6,
-            4,
-            Modifier::KeepHighest(3),
-            0
-        );
+        let roll = roll_die(6, 4, Modifier::KeepHighest(3), 0);
 
         // println!("{:?}", roll.rawrolls);
         // println!("{:?}", roll.performed);
@@ -136,12 +120,7 @@ mod tests {
     }
     #[test]
     fn test_dl() {
-        let roll = roll_die(
-            20,
-            2,
-            Modifier::DropLowest(1),
-            0
-        );
+        let roll = roll_die(20, 2, Modifier::DropLowest(1), 0);
 
         // println!("{}", roll.modify);
         // println!("{:?}", roll.rawrolls);
@@ -152,12 +131,7 @@ mod tests {
     }
     #[test]
     fn test_dh() {
-        let roll = roll_die(
-            20,
-            2,
-            Modifier::DropHighest(1),
-            0
-        );
+        let roll = roll_die(20, 2, Modifier::DropHighest(1), 0);
 
         // println!("{:?}", roll.rawrolls);
         // println!("{:?}", roll.performed);
@@ -167,28 +141,18 @@ mod tests {
     }
     #[test]
     fn test_adj() {
-        let roll = roll_die(
-            6,
-            1,
-            Modifier::None,
-            3
-        );
+        let roll = roll_die(6, 1, Modifier::None, 3);
 
         // println!("{:?}", roll.rawrolls);
         // println!("{:?}", roll.performed);
         // println!("{}", roll.subtotal);
         // println!("{}", roll.total);
         assert_eq!(roll.performed.len(), 1);
-        assert_eq!(roll.total, (roll.subtotal + 3 ))
+        assert_eq!(roll.total, (roll.subtotal + 3))
     }
     #[test]
     fn test_gets() {
-        let roll = roll_die(
-            6,
-            1,
-            Modifier::None,
-            3
-        );
+        let roll = roll_die(6, 1, Modifier::None, 3);
         assert_eq!(roll.get_sides(), 6);
         assert_eq!(roll.get_rolls(), 1);
         assert_eq!(roll.get_adjustment(), 3);
@@ -199,6 +163,3 @@ mod tests {
         println!("{}", roll.get_total());
     }
 }
-
-
-

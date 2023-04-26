@@ -1,4 +1,3 @@
-
 /*
 https://www.5esrd.com/races/ancestry-and-culture-an-alternative-to-races/
 
@@ -413,18 +412,22 @@ alive and dynamic.
 
 mod dragonborn;
 mod dwarf;
+mod elf;
 
-use std::clone::Clone;
-use std::collections::HashMap;
-use rand::prelude::{SliceRandom};
-use rand::Rng;
 use crate::ancestry::dragonborn::{new_dragonborn_ancestry, new_dragonborn_culture};
 use crate::ancestry::dwarf::{new_dwarven_ancestry, new_dwarven_culture};
+use crate::character::{
+    get_damage_type, get_vantage, CharacterAbility, CharacterPreferences, DamageType,
+    MechanicCategory, MechanicLevel, Vantage,
+};
 use crate::modifier::Modifier;
 use crate::roll::roll_die;
-use crate::character::{CharacterAbility, CharacterPreferences, DamageType, get_damage_type, get_vantage, MechanicCategory, MechanicLevel, Vantage};
+use rand::prelude::SliceRandom;
+use rand::Rng;
+use std::clone::Clone;
+use std::collections::HashMap;
 
-pub fn get_lc_some_value(src: Option<String>, default: String)-> String {
+pub fn get_lc_some_value(src: Option<String>, default: String) -> String {
     let return_value;
     if let Some(value) = src.clone() {
         return_value = value.to_lowercase();
@@ -434,7 +437,7 @@ pub fn get_lc_some_value(src: Option<String>, default: String)-> String {
     return_value
 }
 
-pub fn get_i16_some_value(src: Option<i16>, default: i16)-> i16 {
+pub fn get_i16_some_value(src: Option<i16>, default: i16) -> i16 {
     let return_value;
     if let Some(value) = src.clone() {
         return_value = value;
@@ -466,42 +469,24 @@ pub struct BaseAncestralTraits {
     abilities: HashMap<String, HashMap<String, CharacterAbility>>,
     source_material: String,
     source_credit_url: String,
-    source_credit_comment: String
+    source_credit_comment: String,
 }
 
 pub fn get_parent_ancestry(src: String) -> String {
     return match src {
-        _ if src.contains("half-elf") => {
-            String::from("half-elf")
-        },
-        _ if src.contains("half-orc") => {
-            String::from("half-orc")
-        },
+        _ if src.contains("half-elf") => String::from("half-elf"),
+        _ if src.contains("half-orc") => String::from("half-orc"),
         _ if src.ends_with(" dragonborn") || src.contains("dragonborn") => {
             String::from("dragonborn")
-        },
-        _ if src.ends_with(" dwarf") || src.contains("dwarf") => {
-            String::from("dwarf")
-        },
-        _ if src.ends_with(" elf") || src.contains("elf") => {
-            String::from("elf")
-        },
-        _ if src.ends_with(" halfling") || src.contains("halfling") => {
-            String::from("halfling")
-        },
-        _ if src.ends_with(" human") || src.contains("human") => {
-            String::from("human")
-        },
-        _ if src.ends_with(" gnome") || src.contains("gnome") => {
-            String::from("gnome")
-        },
-        _ if src.contains("tiefling") || src.contains("tiefling") => {
-            String::from("tiefling")
-        },
-        _ => {
-            String::from("human")
         }
-    }
+        _ if src.ends_with(" dwarf") || src.contains("dwarf") => String::from("dwarf"),
+        _ if src.ends_with(" elf") || src.contains("elf") => String::from("elf"),
+        _ if src.ends_with(" halfling") || src.contains("halfling") => String::from("halfling"),
+        _ if src.ends_with(" human") || src.contains("human") => String::from("human"),
+        _ if src.ends_with(" gnome") || src.contains("gnome") => String::from("gnome"),
+        _ if src.contains("tiefling") || src.contains("tiefling") => String::from("tiefling"),
+        _ => String::from("human"),
+    };
 }
 
 impl BaseAncestralTraits {
@@ -510,24 +495,32 @@ impl BaseAncestralTraits {
     }
 
     pub fn get_parent_name(&self) -> String {
-
         self.parent_name.clone()
     }
     pub fn get_age(&self) -> i16 {
         let mut rng = rand::thread_rng();
-        rng.gen_range(self.maturity_age..self.avg_max_age + 1).clone()
+        rng.gen_range(self.maturity_age..self.avg_max_age + 1)
+            .clone()
     }
     pub fn get_height(&self) -> i16 {
-        roll_die(self.height_modifier_die,
-                 self.height_modifier_multiplier,
-                 Modifier::None,
-                 self.height_min_inches + self.height_modifier_adj).get_total().clone()
+        roll_die(
+            self.height_modifier_die,
+            self.height_modifier_multiplier,
+            Modifier::None,
+            self.height_min_inches + self.height_modifier_adj,
+        )
+        .get_total()
+        .clone()
     }
-    fn get_weight(&self) -> i16  {
-        roll_die(self.weight_modifier_die,
-                 self.weight_modifier_multiplier,
-                 Modifier::None,
-                 self.weight_min_pounds + self.weight_modifier_adj).get_total().clone()
+    fn get_weight(&self) -> i16 {
+        roll_die(
+            self.weight_modifier_die,
+            self.weight_modifier_multiplier,
+            Modifier::None,
+            self.weight_min_pounds + self.weight_modifier_adj,
+        )
+        .get_total()
+        .clone()
     }
 
     fn get_base_walking_speed(&self) -> i16 {
@@ -554,9 +547,11 @@ impl BaseAncestralTraits {
     fn get_eye_color(&self) -> String {
         get_random_string(self.eye_colors.clone(), "wonderful".to_string())
     }
-    pub fn get_saving_throw(name: String,
-                            vantage: Vantage,
-                            damage_type: DamageType) -> CharacterAbility {
+    pub fn get_saving_throw(
+        name: String,
+        vantage: Vantage,
+        damage_type: DamageType,
+    ) -> CharacterAbility {
         let ability_vantage = get_vantage(vantage);
         let mech_enum_value: MechanicCategory;
         if ability_vantage == "advantage" {
@@ -565,19 +560,17 @@ impl BaseAncestralTraits {
             mech_enum_value = MechanicCategory::Disadvantage;
         }
         let ability_damage_type = get_damage_type(damage_type);
-        CharacterAbility{
+        CharacterAbility {
             ability_name: name,
             category: ability_vantage.clone(),
-            specific_effect: vec! {ability_damage_type},
-            range: vec!{"all".to_string()},
-            mechanic: vec!{
-                MechanicLevel {
-                    level: 1,
-                    effect_range: None,
-                    category: mech_enum_value,
-                }
-            },
-            availability: vec!{"always".to_string()}
+            specific_effect: vec![ability_damage_type],
+            range: vec!["all".to_string()],
+            mechanic: vec![MechanicLevel {
+                level: 1,
+                effect_range: None,
+                category: mech_enum_value,
+            }],
+            availability: vec!["always".to_string()],
         }
     }
     pub fn get_darkvision(range: Option<Vec<String>>) -> CharacterAbility {
@@ -585,62 +578,62 @@ impl BaseAncestralTraits {
         if let Some(value) = range {
             ability_range = value.clone();
         } else {
-            ability_range = vec!{"60 feet".to_string()};
+            ability_range = vec!["60 feet".to_string()];
         }
-        CharacterAbility{
+        CharacterAbility {
             ability_name: "darkvision".to_string(),
             category: "environmental".to_string(),
-            specific_effect: vec! {"dim light".to_string(), "dark".to_string()},
+            specific_effect: vec!["dim light".to_string(), "dark".to_string()],
             range: ability_range,
-            mechanic: vec!{
-                MechanicLevel {
-                    level: 1,
-                    effect_range: None,
-                    category: MechanicCategory::Sight,
-                }
-            },
-            availability: vec!{"always".to_string()}
+            mechanic: vec![MechanicLevel {
+                level: 1,
+                effect_range: None,
+                category: MechanicCategory::Sight,
+            }],
+            availability: vec!["always".to_string()],
         }
     }
     pub fn add_resistances(src: Vec<String>) -> HashMap<String, CharacterAbility> {
         let mut resistances: HashMap<String, CharacterAbility> = HashMap::new();
         for res in src {
-            resistances.insert(res.clone(), CharacterAbility {
-                ability_name: "damage resistance".to_string(),
-                category: "damage".to_string(),
-                specific_effect: vec! {res.clone()},
-                range: vec! {"all".to_string()},
-                // mechanic: vec! {"half damage".to_string()},
-                mechanic: vec!{
-                    MechanicLevel {
+            resistances.insert(
+                res.clone(),
+                CharacterAbility {
+                    ability_name: "damage resistance".to_string(),
+                    category: "damage".to_string(),
+                    specific_effect: vec![res.clone()],
+                    range: vec!["all".to_string()],
+                    // mechanic: vec! {"half damage".to_string()},
+                    mechanic: vec![MechanicLevel {
                         level: 1,
                         effect_range: None,
                         category: MechanicCategory::HalfDamage,
-                    }
+                    }],
+                    availability: vec!["always".to_string()],
                 },
-                availability: vec! {"always".to_string()}
-            });
+            );
         }
         resistances
     }
     pub fn add_immunities(src: Vec<String>) -> HashMap<String, CharacterAbility> {
         let mut immunities: HashMap<String, CharacterAbility> = HashMap::new();
         for res in src {
-            immunities.insert(res.clone(), CharacterAbility {
-                ability_name: "damage immunity".to_string(),
-                category: "damage".to_string(),
-                specific_effect: vec! {res.clone()},
-                range: vec! {"all".to_string()},
-                // mechanic: vec! {"no damage".to_string()},
-                mechanic: vec!{
-                    MechanicLevel {
+            immunities.insert(
+                res.clone(),
+                CharacterAbility {
+                    ability_name: "damage immunity".to_string(),
+                    category: "damage".to_string(),
+                    specific_effect: vec![res.clone()],
+                    range: vec!["all".to_string()],
+                    // mechanic: vec! {"no damage".to_string()},
+                    mechanic: vec![MechanicLevel {
                         level: 1,
                         effect_range: None,
                         category: MechanicCategory::NoDamage,
-                    }
+                    }],
+                    availability: vec!["always".to_string()],
                 },
-                availability: vec! {"always".to_string()}
-            });
+            );
         }
         immunities
     }
@@ -680,38 +673,44 @@ impl AncestralTraits {
             "dragonborn" => new_dragonborn_ancestry(prefs),
             "dwarf" => new_dwarven_ancestry(prefs),
             _ => new_dragonborn_ancestry(prefs),
-        }
+        };
     }
     fn combiner(prefs: &mut CharacterPreferences, base_values: &BaseAncestralTraits) {
-        if let Some(value) = prefs.age  {
-            if value < 1 || value > (base_values.avg_max_age +40) {
+        if let Some(value) = prefs.age {
+            if value < 1 || value > (base_values.avg_max_age + 40) {
                 prefs.age = Some(base_values.get_age());
             }
         } else {
             prefs.age = Some(base_values.get_age());
         }
         if let Some(value) = prefs.height {
-            if value < base_values.height_min_inches ||
-                value > (base_values.height_min_inches +
-                    (base_values.height_modifier_multiplier *
-                        base_values.height_modifier_die) +12) {
+            if value < base_values.height_min_inches
+                || value
+                    > (base_values.height_min_inches
+                        + (base_values.height_modifier_multiplier
+                            * base_values.height_modifier_die)
+                        + 12)
+            {
                 prefs.height = Some(base_values.get_height());
             }
         } else {
             prefs.height = Some(base_values.get_height());
         }
         if let Some(value) = prefs.weight {
-            if value < base_values.weight_min_pounds ||
-                value > (base_values.weight_min_pounds +
-                (base_values.weight_modifier_multiplier *
-                    base_values.weight_modifier_die) + 50) {
+            if value < base_values.weight_min_pounds
+                || value
+                    > (base_values.weight_min_pounds
+                        + (base_values.weight_modifier_multiplier
+                            * base_values.weight_modifier_die)
+                        + 50)
+            {
                 prefs.weight = Some(base_values.get_weight());
             }
         } else {
             prefs.weight = Some(base_values.get_weight());
         }
 
-        if let Some(value) = prefs.skin_tone.clone()  {
+        if let Some(value) = prefs.skin_tone.clone() {
             prefs.skin_tone = Some(value.to_lowercase());
         } else {
             prefs.skin_tone = Some(base_values.get_skin_tone());
@@ -734,9 +733,19 @@ impl AncestralTraits {
     }
 }
 
-pub fn set_alignments(lg: i16, ng: i16, cg: i16, ln: i16, tn: i16, cn: i16,
-    le: i16, ne: i16, ce: i16) -> HashMap<String, i16> {
-    [   ("lawful good".to_string(), lg),
+pub fn set_alignments(
+    lg: i16,
+    ng: i16,
+    cg: i16,
+    ln: i16,
+    tn: i16,
+    cn: i16,
+    le: i16,
+    ne: i16,
+    ce: i16,
+) -> HashMap<String, i16> {
+    [
+        ("lawful good".to_string(), lg),
         ("neutral good".to_string(), ng),
         ("chaotic good".to_string(), cg),
         ("lawful neutral".to_string(), ln),
@@ -744,29 +753,32 @@ pub fn set_alignments(lg: i16, ng: i16, cg: i16, ln: i16, tn: i16, cn: i16,
         ("chaotic neutral".to_string(), cn),
         ("lawful evil".to_string(), le),
         ("neutral evil".to_string(), ne),
-        ("chaotic evil".to_string(), ce), ]
-        .iter()
-        .cloned()
-        .collect()
+        ("chaotic evil".to_string(), ce),
+    ]
+    .iter()
+    .cloned()
+    .collect()
 }
 
-pub fn set_ability_bonuses(s: i8, d: i8, cn: i8, i: i8, w: i8, ch: i8 ) -> HashMap<String, i8> {
-    [   ("strength".to_string(), s),
+pub fn set_ability_bonuses(s: i8, d: i8, cn: i8, i: i8, w: i8, ch: i8) -> HashMap<String, i8> {
+    [
+        ("strength".to_string(), s),
         ("dexterity".to_string(), d),
         ("constitution".to_string(), cn),
         ("intelligence".to_string(), i),
         ("wisdom".to_string(), w),
-        ("charisma".to_string(), ch), ]
-        .iter()
-        .cloned()
-        .collect()
+        ("charisma".to_string(), ch),
+    ]
+    .iter()
+    .cloned()
+    .collect()
 }
 
 pub struct LanguageTraits {
     pub name: String,
     pub can_speak: bool,
     pub can_read: bool,
-    pub can_write: bool
+    pub can_write: bool,
 }
 
 pub struct BaseCulturalTraits {
@@ -791,7 +803,7 @@ impl BaseCulturalTraits {
         }
         String::from("true neutral")
     }
-    pub fn add_languages( src: Vec<LanguageTraits>) -> HashMap<String, CharacterAbility>  {
+    pub fn add_languages(src: Vec<LanguageTraits>) -> HashMap<String, CharacterAbility> {
         let mut languages: HashMap<String, CharacterAbility> = HashMap::new();
         for lt in src {
             let mut modes: Vec<String> = Vec::new();
@@ -807,23 +819,20 @@ impl BaseCulturalTraits {
             let ability1 = CharacterAbility {
                 ability_name: "ancestral language".to_string(),
                 category: "language".to_string(),
-                specific_effect: vec! {lt.name.clone()},
+                specific_effect: vec![lt.name.clone()],
                 range: modes,
                 // mechanic: vec! {"none".to_string()},
-                mechanic: vec!{
-                    MechanicLevel {
-                        level: 1,
-                        effect_range: None,
-                        category: MechanicCategory::Language,
-                    }
-                },
-                availability: vec! {"always".to_string()}
+                mechanic: vec![MechanicLevel {
+                    level: 1,
+                    effect_range: None,
+                    category: MechanicCategory::Language,
+                }],
+                availability: vec!["always".to_string()],
             };
             languages.insert(lt.name.clone(), ability1);
         }
         languages
     }
-
 }
 
 pub struct CulturalTraits {
@@ -838,7 +847,6 @@ pub struct CulturalTraits {
 }
 impl CulturalTraits {
     pub fn new(prefs: &mut CharacterPreferences) -> CulturalTraits {
-
         let cul = get_parent_ancestry(prefs.ancestry.clone());
         let culture_name = &cul[..];
 
@@ -846,21 +854,21 @@ impl CulturalTraits {
             "dragonborn" => new_dragonborn_culture(prefs),
             "dwarf" => new_dwarven_culture(prefs),
             _ => new_dragonborn_culture(prefs),
-        }
+        };
     }
     pub fn combiner(prefs: &mut CharacterPreferences, base_values: &BaseCulturalTraits) {
         if let Some(value) = prefs.alignment.clone() {
             let alignment_string = match value.to_lowercase().as_str() {
                 "lawful good" => "lawful good".to_string(),
-                "good"|"neutral good" => "neutral good".to_string(),
+                "good" | "neutral good" => "neutral good".to_string(),
                 "chaotic good" => "chaotic good".to_string(),
                 "lawful neutral" => "lawful neutral".to_string(),
-                "neutral neutral"|"neutral"|"true neutral" => "true neutral".to_string(),
+                "neutral neutral" | "neutral" | "true neutral" => "true neutral".to_string(),
                 "chaotic neutral" => "chaotic neutral".to_string(),
                 "lawful evil" => "lawful evil".to_string(),
-                "evil"|"neutral evil" => "neutral evil".to_string(),
+                "evil" | "neutral evil" => "neutral evil".to_string(),
                 "chaotic evil" => "chaotic evil".to_string(),
-                _ => base_values.get_alignment()
+                _ => base_values.get_alignment(),
             };
             prefs.alignment = Some(alignment_string)
         } else {
@@ -869,133 +877,9 @@ impl CulturalTraits {
     }
 }
 
-
-
 /*
 
-Elf
-A legend among elven communities describes how the first elves sprang from the dripping blood of
-their god when they were stabbed in battle, while others say that elves descended from their
-fey cousins.
 
-Contents
-
-1 Ancestral Traits
-2 Cultural Traits
-2.1 High Elf
-2.2 Deep Elf
-2.3 Forest Elf
-Ancestral Traits
-Your elf character has a variety of natural abilities, the result of thousands of years of
-elven ancestry.
-
-Age. Although elves reach physical maturity at about the same age as humans, the elven
-understanding of adulthood goes beyond physical growth to encompass worldly experience. An elf
-typically claims adulthood and an adult name around the age of 100 and can live to be 750 years old.
-
-Size. Elves range from under 5 to over 6 feet tall and have slender builds. Your size is Medium.
-
-Speed. Your base walking speed is 30 feet.
-
-Darkvision. Historically accustomed to twilit forests and the night sky, you have superior vision
-in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright
-light, and in darkness as if it were dim light. You can’t discern color in darkness, only shades
-of gray.
-
-Keen Senses. You have proficiency in the Perception skill, a trait that all people with elven
-ancestry share.
-
-Fey Ancestry. Thanks to your fey heritage, you have advantage on saving throws against being
-charmed, and magic can’t put you to sleep.
-
-Trance. Elves don’t need to sleep. Instead, they meditate deeply, remaining semiconscious, for
-4 hours a day. (The Common word for such meditation is “trance.”) While meditating, you can dream
-after a fashion. After resting in this way, you gain the same benefits that other humanoids do
-from 8 hours of sleep.
-
-Cultural Traits
-High Elf
-Source Ancestry & Culture: An Alternative to Race in 5e © 2020 Arcanist Press
-Author: Eugene Marshall
-
-High elven culture is rich in traditions and history, celebrating their long legacy of scholarship,
-acumen, and dance. Those who grow up immersed in this culture often take on certain traits.
-
-Ability Score Increase. Your Dexterity score increases by 2, and your Intelligence score increases
-by 1.
-
-Alignment. The elven culture values freedom, variety, and self-expression, so those who grow up in
-it may lean toward the gentler aspects of chaos. Elven culture tends to value and protect others’
-freedom as well as their own.
-
-Languages. You can speak, read, and write Common and Elvish. Elvish is fluid, with subtle
-intonations and intricate grammar. Elven literature is rich and varied, and their songs and poems
-are famous among other cultures. Many bards learn their language so they can add Elvish ballads to
-their repertoires.
-
-Elven Weapon Training. You have proficiency with the longsword, shortsword, shortbow, and longbow.
-
-Cantrip. You know one cantrip of your choice from the wizard spell list. Intelligence is your
-spellcasting ability for it.
-
-Extra Language. You can speak, read, and write one extra language of your choice.
-
-Deep Elf
-Source More Ancestries & Cultures, Copyright 2020, Arcanist Press LLP.
-
-Deep elven culture differs from that of the high elves, mostly because of centuries of
-subterranean life.
-
-Whereas those who live on the surface might become practiced in hunting or the use of traditional
-elven weapons, those who live deep in the earth adapt to their surroundings differently. Those who
-grow up immersed in this culture often take on certain traits.
-
-Ability Score Increase. Your Dexterity score increases by 2 and Constitution by 1.
-
-Alignment. The deep elven culture has had to struggle to survive in the caverns deep beneath
-the surface, tending with unimaginable horrors and challenges. As such, they have adopted a more
-organized society and therefore ten somewhat toward law.
-
-Languages. You can speak, read, and write Common, Elvish, and Undercommon. Elvish is fluid, with
-subtle intonations and intricate grammar. Elven literature is rich and varied, and their songs
-and poems are famous among other cultures. Many bards learn their language so they can add Elvish
-ballads to their repertoires.
-
-Deep Elven Weapon Training. You have proficiency with the hand crossbow, the scimitar, the spear,
-and the whip.
-
-Subterranean Magics. You know the minor illusion cantrip. When you reach 3rd level, you can cast
-the color spray spell once with this trait and regain the ability to do so when you finish a long
-rest. When you reach 5th level, you can cast the darkness spell once with this trait and regain
-the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these
-spells.
-
-Sunlight Sensitivity. While in direct sunlight, you have disadvantage on attack rolls, as well as
-on Wisdom (Perception) checks that rely on sight.
-
-Forest Elf
-Source More Ancestries & Cultures, Copyright 2020, Arcanist Press LLP.
-
-Forest elven culture differs from that of the high elves in certain ways. Whereas those who live
-in high elven culture each study magic and certain traditional elven martial arts, forest elven
-culture is freer, embracing nature as a parent. Those who grow up immersed in this culture often
-take on certain traits.
-
-Ability Score Increase. Your Dexterity score increases by 2 and Wisdom by 1.
-
-Alignment. The forest elven culture values freedom, variety, and self-expression, so those who grow
-up in it may lean toward the gentler aspects of chaos. Forest elven culture tends to value the
-freedom of the wilds, as well as their own.
-
-Languages. You can speak, read, and write Common, Elvish, and Sylvan. Elvish is fluid, with subtle
-intonations and intricate grammar. Elven literature is rich and varied, and their songs and poems
-are famous among other cultures. Many bards learn their language so they can add Elvish ballads
-to their repertoires.
-
-Forest Elven Weapon Training. You have proficiency with the longbow, shortbow, rapier, and net.
-
-Way of the Wood. You have proficiency in the Stealth and Survival skills. When you are in forest,
-you add double your proficiency bonus to the checks, instead of your normal proficiency bonus.
 
 Gnome
 Some scholars in gnomish culture recount tales of gnomes shaped from ancient, magical gems,

@@ -1,17 +1,17 @@
-use std::collections::HashMap;
 use crate::modifier::Modifier::DropLowest;
 use crate::roll;
 use crate::roll::roll_die;
+use std::collections::HashMap;
 use std::convert::TryInto;
 
 pub fn get_ability_score_modifier(score: i16) -> i16 {
     let return_value: i16;
     match score {
-        1       => return_value = -5,
-        2 | 3   => return_value = -4,
-        4 | 5   => return_value = -3,
-        6 | 7   => return_value = -2,
-        8 | 9   => return_value = -1,
+        1 => return_value = -5,
+        2 | 3 => return_value = -4,
+        4 | 5 => return_value = -3,
+        6 | 7 => return_value = -2,
+        8 | 9 => return_value = -1,
         10 | 11 => return_value = 0,
         12 | 13 => return_value = 1,
         14 | 15 => return_value = 2,
@@ -22,7 +22,7 @@ pub fn get_ability_score_modifier(score: i16) -> i16 {
         24 | 25 => return_value = 7,
         26 | 27 => return_value = 8,
         28 | 29 => return_value = 9,
-        30      => return_value = 10,
+        30 => return_value = 10,
         _ => return_value = 0,
     }
     return_value
@@ -30,7 +30,7 @@ pub fn get_ability_score_modifier(score: i16) -> i16 {
 
 pub struct Ability {
     description: String,
-    value: roll::Roll
+    value: roll::Roll,
 }
 
 fn roll_ability(description: String) -> Ability {
@@ -39,28 +39,38 @@ fn roll_ability(description: String) -> Ability {
 
     Ability {
         description,
-        value: roll_die(six, four, DropLowest(1), 0)
+        value: roll_die(six, four, DropLowest(1), 0),
     }
 }
 
 pub fn roll_ability_scores() -> HashMap<String, Ability> {
     let mut scores = HashMap::new();
-    scores.insert(String::from("Strength"),
-                  roll_ability(String::from("approximates physical power")));
-    scores.insert(String::from("Dexterity"),
-                  roll_ability(String::from("approximates agility")));
-    scores.insert(String::from("Constitution"),
-                  roll_ability(String::from("approximates endurance")));
-    scores.insert(String::from("Intelligence"),
-                  roll_ability(String::from("approximates reasoning and memory")));
-    scores.insert(String::from("Wisdom"),
-                  roll_ability(String::from("approximates perception and insight")));
-    scores.insert(String::from("Charisma"),
-                  roll_ability(String::from("approximates force of personality")));
+    scores.insert(
+        String::from("Strength"),
+        roll_ability(String::from("approximates physical power")),
+    );
+    scores.insert(
+        String::from("Dexterity"),
+        roll_ability(String::from("approximates agility")),
+    );
+    scores.insert(
+        String::from("Constitution"),
+        roll_ability(String::from("approximates endurance")),
+    );
+    scores.insert(
+        String::from("Intelligence"),
+        roll_ability(String::from("approximates reasoning and memory")),
+    );
+    scores.insert(
+        String::from("Wisdom"),
+        roll_ability(String::from("approximates perception and insight")),
+    );
+    scores.insert(
+        String::from("Charisma"),
+        roll_ability(String::from("approximates force of personality")),
+    );
     scores
 }
-
-
 
 fn convert_vector_to_array<T, const N: usize>(v: Vec<T>) -> [T; N] {
     v.try_into()
@@ -84,7 +94,7 @@ pub fn sort_ability_scores(scores: Vec<i16>, order_by: [usize; 6]) -> Vec<i16> {
              return_vector.push(value)
     */
     let mut return_vector: Vec<i16> = vec![];
-    let working_array:[i16;6] = convert_vector_to_array(scores);
+    let working_array: [i16; 6] = convert_vector_to_array(scores);
     for spec in order_by {
         let derived = spec - 1;
         let stretch: usize = derived.into();
@@ -132,7 +142,10 @@ mod tests {
     fn test_intelligence() {
         let scores = roll_ability_scores();
         let ability = scores.get("Intelligence");
-        assert_eq!(ability.unwrap().description, "approximates reasoning and memory");
+        assert_eq!(
+            ability.unwrap().description,
+            "approximates reasoning and memory"
+        );
         assert_eq!(ability.unwrap().value.get_sides(), 6);
         assert_eq!(ability.unwrap().value.get_rolls(), 4);
         assert_eq!(ability.unwrap().value.get_adjustment(), 0);
@@ -142,7 +155,10 @@ mod tests {
     fn test_wisdom() {
         let scores = roll_ability_scores();
         let ability = scores.get("Wisdom");
-        assert_eq!(ability.unwrap().description, "approximates perception and insight");
+        assert_eq!(
+            ability.unwrap().description,
+            "approximates perception and insight"
+        );
         assert_eq!(ability.unwrap().value.get_sides(), 6);
         assert_eq!(ability.unwrap().value.get_rolls(), 4);
         assert_eq!(ability.unwrap().value.get_adjustment(), 0);
@@ -152,7 +168,10 @@ mod tests {
     fn test_charisma() {
         let scores = roll_ability_scores();
         let ability = scores.get("Charisma");
-        assert_eq!(ability.unwrap().description, "approximates force of personality");
+        assert_eq!(
+            ability.unwrap().description,
+            "approximates force of personality"
+        );
         assert_eq!(ability.unwrap().value.get_sides(), 6);
         assert_eq!(ability.unwrap().value.get_rolls(), 4);
         assert_eq!(ability.unwrap().value.get_adjustment(), 0);
@@ -180,12 +199,12 @@ mod tests {
     }
     #[test]
     fn test_sort_ability_scores() {
-        let result = sort_ability_scores(vec![9,10,11,12,13,14], [1,2,3,4,5,6]);
-        assert_eq!(result, vec![9,10,11,12,13,14])
+        let result = sort_ability_scores(vec![9, 10, 11, 12, 13, 14], [1, 2, 3, 4, 5, 6]);
+        assert_eq!(result, vec![9, 10, 11, 12, 13, 14])
     }
     #[test]
     fn test_sort_ability_scores_desc() {
-        let result = sort_ability_scores(vec![9,10,11,12,13,14], [6,5,4,3,2,1]);
-        assert_eq!(result, vec![14,13,12,11,10,9])
+        let result = sort_ability_scores(vec![9, 10, 11, 12, 13, 14], [6, 5, 4, 3, 2, 1]);
+        assert_eq!(result, vec![14, 13, 12, 11, 10, 9])
     }
 }

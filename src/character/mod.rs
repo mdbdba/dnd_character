@@ -1,16 +1,14 @@
 use std::collections::HashMap;
 // use crate::ancestry::CharacterAbility;
 
-
 // #[derive(Clone)]
 pub struct CharacterAbility {
     pub ability_name: String, // What the ability is named in the documentation
-    pub category: String, // For sorting into what it does for the character. (Spell, Language)
+    pub category: String,     // For sorting into what it does for the character. (Spell, Language)
     pub specific_effect: Vec<String>, // What is it allowing, like Spell Name, language name
     pub range: Vec<String>, // actual distances for spells and melee, or read, written, and spoken for language.
     pub mechanic: Vec<MechanicLevel>, // explaining the mechanic to be used. amt of damage, attack roll vs. save, etc
-    pub availability: Vec<String>, // Always, 1 per long rest, etc.
-
+    pub availability: Vec<String>,    // Always, 1 per long rest, etc.
 }
 
 pub struct EffectValueRange {
@@ -20,76 +18,71 @@ pub struct EffectValueRange {
     pub effect_type: Option<DamageType>,
 }
 
-pub fn get_check_proficiency(name: String,
-                             skill_name: String,
-                             condition: String,
-                             effect: MechanicCategory,
-                             level: Option<i16> ) -> CharacterAbility {
+pub fn get_check_proficiency(
+    name: String,
+    skill_name: String,
+    condition: String,
+    effect: MechanicCategory,
+    level: Option<i16>,
+) -> CharacterAbility {
     let derived_level: i16;
     if let Some(value) = level.clone() {
         derived_level = value;
     } else {
         derived_level = 1;
     }
-    CharacterAbility{
+    CharacterAbility {
         ability_name: name.clone(),
         category: "checks".to_string(),
-        specific_effect: vec!{skill_name.clone()},
-        range: vec!{"none".to_string()},
-        mechanic: vec!{
-            MechanicLevel {
-                level: derived_level,
-                effect_range: None,
-                category: effect,
-            }
-        },
-        availability: vec!{condition.clone()}
+        specific_effect: vec![skill_name.clone()],
+        range: vec!["none".to_string()],
+        mechanic: vec![MechanicLevel {
+            level: derived_level,
+            effect_range: None,
+            category: effect,
+        }],
+        availability: vec![condition.clone()],
     }
 }
-
 
 pub fn get_weapon_proficiency(name: String, weapon_name: String) -> CharacterAbility {
-    CharacterAbility{
+    CharacterAbility {
         ability_name: name.clone(),
         category: "weapon".to_string(),
-        specific_effect: vec!{weapon_name.clone()},
-        range: vec!{"all".to_string()},
-        mechanic: vec!{
-            MechanicLevel {
-                level: 1,
-                effect_range: None,
-                category: MechanicCategory::WeaponProficiency,
-            }},
-        availability: vec!{"always".to_string()}
+        specific_effect: vec![weapon_name.clone()],
+        range: vec!["all".to_string()],
+        mechanic: vec![MechanicLevel {
+            level: 1,
+            effect_range: None,
+            category: MechanicCategory::WeaponProficiency,
+        }],
+        availability: vec!["always".to_string()],
     }
 }
 
-pub fn get_tool_proficiency(name: String, tool_name: String ) -> CharacterAbility {
+pub fn get_tool_proficiency(name: String, tool_name: String) -> CharacterAbility {
     CharacterAbility {
         ability_name: name.to_string(),
         category: "tool".to_string(),
-        specific_effect: vec! {tool_name.clone()},
-        range: vec! {"all".to_string()},
-        mechanic: vec! {
-            MechanicLevel {
-                level: 1,
-                effect_range: None,
-                category: MechanicCategory::ToolProficiency,
-            }},
-        availability: vec! {"always".to_string()}
+        specific_effect: vec![tool_name.clone()],
+        range: vec!["all".to_string()],
+        mechanic: vec![MechanicLevel {
+            level: 1,
+            effect_range: None,
+            category: MechanicCategory::ToolProficiency,
+        }],
+        availability: vec!["always".to_string()],
     }
 }
 
-
-
 pub enum Vantage {
     Advantage,
-    Disadvantage
+    Disadvantage,
 }
 pub fn get_vantage(src: Vantage) -> String {
     match src {
-        Advantage=> "advantage".to_string(),
-        Disadvantage=> "disadvantage".to_string(),
+        Advantage => "advantage".to_string(),
+        Disadvantage => "disadvantage".to_string(),
     }
 }
 
@@ -108,43 +101,43 @@ pub enum DamageType {
     Radiant,
     Slashing,
     Thunder,
-    None
+    None,
 }
 
 pub fn get_damage_enum(src: String) -> DamageType {
     match src.as_str() {
-        "acid"        => DamageType::Acid,
+        "acid" => DamageType::Acid,
         "bludgeoning" => DamageType::Bludgeoning,
-        "cold"        => DamageType::Cold,
-        "fire"        => DamageType::Fire,
-        "force"       => DamageType::Force,
-        "lightning"   => DamageType::Lightning,
-        "necrotic"    => DamageType::Necrotic,
-        "piercing"    => DamageType::Piercing,
-        "poison"      => DamageType::Poison,
-        "psychic"     => DamageType::Psychic,
-        "radiant"     => DamageType::Radiant,
-        "slashing"    => DamageType::Slashing,
-        "thunder"     => DamageType::Thunder,
-        _             => DamageType::None,
+        "cold" => DamageType::Cold,
+        "fire" => DamageType::Fire,
+        "force" => DamageType::Force,
+        "lightning" => DamageType::Lightning,
+        "necrotic" => DamageType::Necrotic,
+        "piercing" => DamageType::Piercing,
+        "poison" => DamageType::Poison,
+        "psychic" => DamageType::Psychic,
+        "radiant" => DamageType::Radiant,
+        "slashing" => DamageType::Slashing,
+        "thunder" => DamageType::Thunder,
+        _ => DamageType::None,
     }
 }
 
 pub fn get_damage_type(src: DamageType) -> String {
     match src {
-        Acid=> "acid".to_string(),
-        Bludgeoning=> "bludgeoning".to_string(),
-        Cold=> "cold".to_string(),
-        Fire=> "fire".to_string(),
-        Force=> "force".to_string(),
-        Lightning=> "lightning".to_string(),
-        Necrotic=> "necrotic".to_string(),
-        Piercing=> "piercing".to_string(),
-        Poison=> "poison".to_string(),
-        Psychic=> "psychic".to_string(),
-        Radiant=> "radiant".to_string(),
-        Slashing=> "slashing".to_string(),
-        Thunder=> "thunder".to_string(),
+        Acid => "acid".to_string(),
+        Bludgeoning => "bludgeoning".to_string(),
+        Cold => "cold".to_string(),
+        Fire => "fire".to_string(),
+        Force => "force".to_string(),
+        Lightning => "lightning".to_string(),
+        Necrotic => "necrotic".to_string(),
+        Piercing => "piercing".to_string(),
+        Poison => "poison".to_string(),
+        Psychic => "psychic".to_string(),
+        Radiant => "radiant".to_string(),
+        Slashing => "slashing".to_string(),
+        Thunder => "thunder".to_string(),
         DamageType::None => "none".to_string(),
     }
 }
@@ -169,7 +162,6 @@ pub struct MechanicLevel {
     pub category: MechanicCategory,
 }
 
-
 pub struct CharacterPreferences {
     pub name: String,
     pub ancestry: String,
@@ -183,7 +175,7 @@ pub struct CharacterPreferences {
     pub hair_type: Option<String>,
     pub eye_color: Option<String>,
     pub abilities: Option<HashMap<String, HashMap<String, CharacterAbility>>>,
-    pub tool_proficiencies: Option<Vec<String>>
+    pub tool_proficiencies: Option<Vec<String>>,
 }
 
 impl Default for CharacterPreferences {
