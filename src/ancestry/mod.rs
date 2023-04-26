@@ -444,21 +444,6 @@ pub fn get_i16_some_value(src: Option<i16>, default: i16)-> i16 {
     return_value
 }
 
-/*
-#[derive(Clone)]
-pub struct CharacterAbility {
-    pub ability_name: String, // What the ability is named in the documentation
-    pub category: String, // For sorting into what it does for the character. (Spell, Language)
-    pub specific_effect: Vec<String>, // What is it allowing, like Spell Name, language name
-    pub range: Vec<String>, // actual distances for spells and melee, or read, written, and spoken for language.
-    pub mechanic: Vec<String>, // explaining the mechanic to be used. amt of damage, attack roll vs. save, etc
-    pub availability: Vec<String>, // Always, 1 per long rest, etc.
-
-}
-
- */
-
-// #[derive(Clone)]
 pub struct BaseAncestralTraits {
     name: String,
     parent_name: String,
@@ -588,9 +573,7 @@ impl BaseAncestralTraits {
             mechanic: vec!{
                 MechanicLevel {
                     level: 1,
-                    roll_multiplier: None,
-                    roll_die: None,
-                    adjustment: None,
+                    effect_range: None,
                     category: mech_enum_value,
                 }
             },
@@ -612,9 +595,7 @@ impl BaseAncestralTraits {
             mechanic: vec!{
                 MechanicLevel {
                     level: 1,
-                    roll_multiplier: None,
-                    roll_die: None,
-                    adjustment: None,
+                    effect_range: None,
                     category: MechanicCategory::Sight,
                 }
             },
@@ -633,9 +614,7 @@ impl BaseAncestralTraits {
                 mechanic: vec!{
                     MechanicLevel {
                         level: 1,
-                        roll_multiplier: None,
-                        roll_die: None,
-                        adjustment: None,
+                        effect_range: None,
                         category: MechanicCategory::HalfDamage,
                     }
                 },
@@ -656,9 +635,7 @@ impl BaseAncestralTraits {
                 mechanic: vec!{
                     MechanicLevel {
                         level: 1,
-                        roll_multiplier: None,
-                        roll_die: None,
-                        adjustment: None,
+                        effect_range: None,
                         category: MechanicCategory::NoDamage,
                     }
                 },
@@ -836,9 +813,7 @@ impl BaseCulturalTraits {
                 mechanic: vec!{
                     MechanicLevel {
                         level: 1,
-                        roll_multiplier: None,
-                        roll_die: None,
-                        adjustment: None,
+                        effect_range: None,
                         category: MechanicCategory::Language,
                     }
                 },

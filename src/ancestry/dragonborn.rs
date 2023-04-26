@@ -52,7 +52,7 @@ use rand::distributions::Standard;
 use rand::prelude::Distribution;
 use rand::Rng;
 use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, get_i16_some_value, get_lc_some_value, LanguageTraits, set_ability_bonuses, set_alignments};
-use crate::character::{CharacterPreferences, MechanicCategory, MechanicLevel};
+use crate::character::{CharacterPreferences, EffectValueRange, get_check_proficiency, get_damage_enum, MechanicCategory, MechanicLevel};
 
 #[derive(Debug)]
 pub enum DragonbornColor {
@@ -212,48 +212,52 @@ pub fn new_dragonborn_ancestry(prefs: &mut CharacterPreferences) -> AncestralTra
     let resistances =
         BaseAncestralTraits::add_resistances(vec!{resistance.clone()});
 
-
+    let damage_enum = get_damage_enum(resistance.clone());
     let mut offensive: HashMap<String, CharacterAbility> = HashMap::new();
     let ability1 = CharacterAbility{
         ability_name: "breath weapon".to_string(),
         category: "offensive".to_string(),
         specific_effect: vec! {resistance.clone()},
         range: effect_range,
-        /*mechanic: vec!{
-            "1:2d6".to_string(),
-            "6:3d6".to_string(),
-            "11:4d6".to_string(),
-            "16:5d6".to_string()
-        },
-
-         */
         mechanic: vec!{
             MechanicLevel {
                 level: 1,
-                roll_multiplier: Some(2),
-                roll_die: Some(6),
-                adjustment: None,
+                effect_range: Some(EffectValueRange {
+                    roll_multiplier: Some(2),
+                    roll_die: Some(6),
+                    adjustment: None,
+                    effect_type: Some(damage_enum),
+                }),
                 category: MechanicCategory::Damage,
             },
             MechanicLevel {
                 level: 6,
-                roll_multiplier: Some(3),
-                roll_die: Some(6),
-                adjustment: None,
+                effect_range: Some(EffectValueRange {
+                    roll_multiplier: Some(3),
+                    roll_die: Some(6),
+                    adjustment: None,
+                    effect_type: Some(damage_enum),
+                }),
                 category: MechanicCategory::Damage,
             },
             MechanicLevel {
                 level: 11,
-                roll_multiplier: Some(4),
-                roll_die: Some(6),
-                adjustment: None,
+                effect_range: Some(EffectValueRange {
+                    roll_multiplier: Some(4),
+                    roll_die: Some(6),
+                    adjustment: None,
+                    effect_type: Some(damage_enum),
+                }),
                 category: MechanicCategory::Damage,
             },
             MechanicLevel {
                 level: 16,
-                roll_multiplier: Some(5),
-                roll_die: Some(6),
-                adjustment: None,
+                effect_range: Some(EffectValueRange {
+                    roll_multiplier: Some(5),
+                    roll_die: Some(6),
+                    adjustment: None,
+                    effect_type: Some(damage_enum),
+                }),
                 category: MechanicCategory::Damage,
             },
         },
@@ -381,26 +385,27 @@ pub fn new_dragonborn_culture(prefs: &mut CharacterPreferences) -> CulturalTrait
         ]);
 
     let mut checks: HashMap<String, CharacterAbility> = HashMap::new();
-    let ability1 = CharacterAbility{
+    let ability1 = get_check_proficiency("dragon lore".to_string(),
+                                         "intelligence".to_string(),
+                                         "specific to dragons".to_string(),
+                                         MechanicCategory::Advantage,
+                                         None);
+        /*
+        CharacterAbility{
         ability_name: "dragon lore".to_string(),
         category: "checks".to_string(),
-        specific_effect: vec!{
-            "intelligence".to_string(),
-            "specific to dragons".to_string()
-        },
+        specific_effect: vec!{"intelligence".to_string()},
         range: vec!{"none".to_string()},
-        // mechanic: vec!{"advantage".to_string()},
         mechanic: vec!{
             MechanicLevel {
                 level: 1,
-                roll_multiplier: None,
-                roll_die: None,
-                adjustment: None,
+                effect_range: None,
                 category: MechanicCategory::Advantage,
             }
         },
-        availability: vec!{"always".to_string()}
+        availability: vec!{"specific to dragons".to_string()}
     };
+    */
     checks.insert("intelligence".to_string(), ability1);
 
 

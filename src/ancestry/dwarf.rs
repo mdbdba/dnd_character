@@ -34,7 +34,7 @@ use rand::distributions::Standard;
 use rand::prelude::Distribution;
 use rand::Rng;
 use crate::ancestry::{AncestralTraits, BaseAncestralTraits, BaseCulturalTraits, CharacterAbility, CulturalTraits, get_i16_some_value, get_lc_some_value, get_random_string, LanguageTraits, set_ability_bonuses, set_alignments};
-use crate::character::{CharacterPreferences, DamageType, get_tool_proficiency, get_weapon_proficiency, MechanicCategory, MechanicLevel, Vantage};
+use crate::character::{CharacterPreferences, DamageType, EffectValueRange, get_check_proficiency, get_tool_proficiency, get_weapon_proficiency, MechanicCategory, MechanicLevel, Vantage};
 
 #[derive(Debug)]
 pub enum SubClass {
@@ -104,13 +104,15 @@ pub fn new_dwarven_ancestry(prefs: &mut CharacterPreferences) -> AncestralTraits
         category: "help".to_string(),
         specific_effect: vec! {"hit_points".to_string()},
         range: vec!{"all".to_string()},
-        // mechanic: vec!{"1 hit point".to_string()},
         mechanic: vec!{
             MechanicLevel {
                 level: 1,
-                roll_multiplier: None,
-                roll_die: None,
-                adjustment: Some(1),
+                effect_range: Some(EffectValueRange {
+                    roll_multiplier: None,
+                    roll_die: None,
+                    adjustment: Some(1),
+                    effect_type: Some(DamageType::None),
+                }),
                 category: MechanicCategory::HitPoints,
             }
         },
@@ -285,35 +287,46 @@ pub fn new_dwarven_culture(prefs: &mut CharacterPreferences) -> CulturalTraits {
     proficiencies.insert(tool_proficiency.clone(),
                          get_tool_proficiency("tool proficiency".to_string(),
                                               tool_proficiency.clone()));
+/*
+    Stonecunning. Whenever you make an Intelligence (History) check related to the origin of stonework,
+    you are considered proficient in the History skill and add double your proficiency bonus to the
+    check, instead of your normal proficiency bonus.
+ */
+    proficiencies.insert("history".to_string(),
+                         get_check_proficiency("stonecunning".to_string(),
+                                               "history".to_string(),
+                                               "specific to stonework".to_string(),
+                                               MechanicCategory::DoubleProficiencyBonus,
+                                               None));
+    
+cultural_abilities.insert("languages".to_string(), languages);
+cultural_abilities.insert("proficiencies".to_string(), proficiencies);
 
-    cultural_abilities.insert("languages".to_string(), languages);
-    cultural_abilities.insert("proficiencies".to_string(), proficiencies);
+let base_values = BaseCulturalTraits {
+    alignments: set_alignments(45,5,5,15,5,5,10,5,5),
+    tool_proficiency_choices: Some(vec!{
+    "smith’s tools".to_string(),
+    "brewer’s supplies".to_string(),
+    "mechanic’s tools".to_string(),
+    "mason’s tools".to_string()}),
+    ability_bonuses: set_ability_bonuses(0,0,2,0,1,0),
+    abilities: cultural_abilities,
+};
 
-    let base_values = BaseCulturalTraits {
-        alignments: set_alignments(45,5,5,15,5,5,10,5,5),
-        tool_proficiency_choices: Some(vec!{
-        "smith’s tools".to_string(),
-        "brewer’s supplies".to_string(),
-        "mechanic’s tools".to_string(),
-        "mason’s tools".to_string()}),
-        ability_bonuses: set_ability_bonuses(0,0,2,0,1,0),
-        abilities: cultural_abilities,
-    };
+CulturalTraits::combiner(prefs, &base_values);
 
-    CulturalTraits::combiner(prefs, &base_values);
-
-    CulturalTraits {
-        name: combined_name,
-        parent_name,
-        alignment: get_lc_some_value(prefs.alignment.clone(), "true neutral".to_string()),
-        ability_bonuses: base_values.ability_bonuses,
-        abilities: base_values.abilities,
-        source_material: { "SRD".to_string() },
-        source_credit_url: {
-            "https://www.dndbeyond.com/attachments/39j2li89/SRD5.1-CCBY4.0_License_live%20links.pdf".to_string()
-        },
-        source_credit_comment: {"As of 2023/03/25".to_string() }
-    }
+CulturalTraits {
+    name: combined_name,
+    parent_name,
+    alignment: get_lc_some_value(prefs.alignment.clone(), "true neutral".to_string()),
+    ability_bonuses: base_values.ability_bonuses,
+    abilities: base_values.abilities,
+    source_material: { "SRD".to_string() },
+    source_credit_url: {
+        "https://www.dndbeyond.com/attachments/39j2li89/SRD5.1-CCBY4.0_License_live%20links.pdf".to_string()
+    },
+    source_credit_comment: {"As of 2023/03/25".to_string() }
+}
 }
 
 #[cfg(test)]

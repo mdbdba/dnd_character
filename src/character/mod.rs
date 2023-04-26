@@ -13,6 +13,41 @@ pub struct CharacterAbility {
 
 }
 
+pub struct EffectValueRange {
+    pub roll_multiplier: Option<i16>,
+    pub roll_die: Option<i16>,
+    pub adjustment: Option<i16>,
+    pub effect_type: Option<DamageType>,
+}
+
+pub fn get_check_proficiency(name: String,
+                             skill_name: String,
+                             condition: String,
+                             effect: MechanicCategory,
+                             level: Option<i16> ) -> CharacterAbility {
+    let derived_level: i16;
+    if let Some(value) = level.clone() {
+        derived_level = value;
+    } else {
+        derived_level = 1;
+    }
+    CharacterAbility{
+        ability_name: name.clone(),
+        category: "checks".to_string(),
+        specific_effect: vec!{skill_name.clone()},
+        range: vec!{"none".to_string()},
+        mechanic: vec!{
+            MechanicLevel {
+                level: derived_level,
+                effect_range: None,
+                category: effect,
+            }
+        },
+        availability: vec!{condition.clone()}
+    }
+}
+
+
 pub fn get_weapon_proficiency(name: String, weapon_name: String) -> CharacterAbility {
     CharacterAbility{
         ability_name: name.clone(),
@@ -22,9 +57,7 @@ pub fn get_weapon_proficiency(name: String, weapon_name: String) -> CharacterAbi
         mechanic: vec!{
             MechanicLevel {
                 level: 1,
-                roll_multiplier: None,
-                roll_die: None,
-                adjustment: None,
+                effect_range: None,
                 category: MechanicCategory::WeaponProficiency,
             }},
         availability: vec!{"always".to_string()}
@@ -40,9 +73,7 @@ pub fn get_tool_proficiency(name: String, tool_name: String ) -> CharacterAbilit
         mechanic: vec! {
             MechanicLevel {
                 level: 1,
-                roll_multiplier: None,
-                roll_die: None,
-                adjustment: None,
+                effect_range: None,
                 category: MechanicCategory::ToolProficiency,
             }},
         availability: vec! {"always".to_string()}
@@ -62,6 +93,7 @@ pub fn get_vantage(src: Vantage) -> String {
     }
 }
 
+#[derive(Clone, Copy)]
 pub enum DamageType {
     Acid,
     Bludgeoning,
@@ -75,7 +107,27 @@ pub enum DamageType {
     Psychic,
     Radiant,
     Slashing,
-    Thunder
+    Thunder,
+    None
+}
+
+pub fn get_damage_enum(src: String) -> DamageType {
+    match src.as_str() {
+        "acid"        => DamageType::Acid,
+        "bludgeoning" => DamageType::Bludgeoning,
+        "cold"        => DamageType::Cold,
+        "fire"        => DamageType::Fire,
+        "force"       => DamageType::Force,
+        "lightning"   => DamageType::Lightning,
+        "necrotic"    => DamageType::Necrotic,
+        "piercing"    => DamageType::Piercing,
+        "poison"      => DamageType::Poison,
+        "psychic"     => DamageType::Psychic,
+        "radiant"     => DamageType::Radiant,
+        "slashing"    => DamageType::Slashing,
+        "thunder"     => DamageType::Thunder,
+        _             => DamageType::None,
+    }
 }
 
 pub fn get_damage_type(src: DamageType) -> String {
@@ -93,6 +145,7 @@ pub fn get_damage_type(src: DamageType) -> String {
         Radiant=> "radiant".to_string(),
         Slashing=> "slashing".to_string(),
         Thunder=> "thunder".to_string(),
+        DamageType::None => "none".to_string(),
     }
 }
 
@@ -107,13 +160,12 @@ pub enum MechanicCategory {
     Language,
     HitPoints,
     WeaponProficiency,
-    ToolProficiency
+    ToolProficiency,
+    DoubleProficiencyBonus,
 }
 pub struct MechanicLevel {
     pub level: i16,
-    pub roll_multiplier: Option<i16>,
-    pub roll_die: Option<i16>,
-    pub adjustment: Option<i16>,
+    pub effect_range: Option<EffectValueRange>,
     pub category: MechanicCategory,
 }
 
