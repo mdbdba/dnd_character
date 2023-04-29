@@ -507,7 +507,7 @@ mod tests {
     #[test]
     fn test_all_ancestry_prefs() {
         let mut prefs = CharacterPreferences {
-            name: "chuck".to_string(),
+            name: Some("chuck".to_string()),
             ancestry: "silver dragonborn".to_string(),
             age: Some(99),
             height: Some(92),

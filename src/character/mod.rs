@@ -77,12 +77,14 @@ pub fn get_tool_proficiency(name: String, tool_name: String) -> CharacterAbility
 
 pub enum Vantage {
     Advantage,
+    Normal,
     Disadvantage,
 }
 pub fn get_vantage(src: Vantage) -> String {
     match src {
-        Advantage => "advantage".to_string(),
-        Disadvantage => "disadvantage".to_string(),
+        Vantage::Advantage => "advantage".to_string(),
+        Vantage::Normal => "normal".to_string(),
+        Vantage::Disadvantage => "disadvantage".to_string(),
     }
 }
 
@@ -125,23 +127,23 @@ pub fn get_damage_enum(src: String) -> DamageType {
 
 pub fn get_damage_type(src: DamageType) -> String {
     match src {
-        Acid => "acid".to_string(),
-        Bludgeoning => "bludgeoning".to_string(),
-        Cold => "cold".to_string(),
-        Fire => "fire".to_string(),
-        Force => "force".to_string(),
-        Lightning => "lightning".to_string(),
-        Necrotic => "necrotic".to_string(),
-        Piercing => "piercing".to_string(),
-        Poison => "poison".to_string(),
-        Psychic => "psychic".to_string(),
-        Radiant => "radiant".to_string(),
-        Slashing => "slashing".to_string(),
-        Thunder => "thunder".to_string(),
+        DamageType::Acid => "acid".to_string(),
+        DamageType::Bludgeoning => "bludgeoning".to_string(),
+        DamageType::Cold => "cold".to_string(),
+        DamageType::Fire => "fire".to_string(),
+        DamageType::Force => "force".to_string(),
+        DamageType::Lightning => "lightning".to_string(),
+        DamageType::Necrotic => "necrotic".to_string(),
+        DamageType::Piercing => "piercing".to_string(),
+        DamageType::Poison => "poison".to_string(),
+        DamageType::Psychic => "psychic".to_string(),
+        DamageType::Radiant => "radiant".to_string(),
+        DamageType::Slashing => "slashing".to_string(),
+        DamageType::Thunder => "thunder".to_string(),
         DamageType::None => "none".to_string(),
     }
 }
-
+#[derive(PartialEq, Debug)]
 pub enum MechanicCategory {
     Damage,
     NoDamage,
@@ -163,7 +165,7 @@ pub struct MechanicLevel {
 }
 
 pub struct CharacterPreferences {
-    pub name: String,
+    pub name: Option<String>,
     pub ancestry: String,
     pub culture: String,
     pub age: Option<i16>,
@@ -181,7 +183,7 @@ pub struct CharacterPreferences {
 impl Default for CharacterPreferences {
     fn default() -> Self {
         CharacterPreferences {
-            name: "None".to_string(),
+            name: None,
             ancestry: "None".to_string(),
             culture: "None".to_string(),
             age: None,
@@ -195,5 +197,73 @@ impl Default for CharacterPreferences {
             abilities: None,
             tool_proficiencies: None,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    //use crate::ancestry::{AncestralTraits, CulturalTraits};
+    use crate::character::{CharacterPreferences, get_vantage, MechanicCategory, Vantage};
+
+    #[test]
+    fn test_default_preferences() {
+        let prefs = CharacterPreferences {
+            ..CharacterPreferences::default()
+        };
+        assert_eq!(prefs.name, Option::None);
+        assert_eq!(prefs.ancestry, "None".to_string());
+        assert_eq!(prefs.culture, "None".to_string());
+        assert_eq!(prefs.age, Option::None);
+        assert_eq!(prefs.height, Option::None);
+        assert_eq!(prefs.weight, Option::None);
+        assert_eq!(prefs.alignment, Option::None);
+        assert_eq!(prefs.skin_tone, Option::None);
+        assert_eq!(prefs.hair_color, Option::None);
+        assert_eq!(prefs.hair_type, Option::None);
+        assert_eq!(prefs.eye_color, Option::None);
+        let option_match = match prefs.abilities {
+            None => None,
+            Some(_i) => Some("found something".to_string()),
+        };
+        assert_eq!(option_match, Option::None);
+        assert_eq!(prefs.tool_proficiencies, Option::None);
+    }
+    #[test]
+    fn test_add_vantages() {
+        let adv = Vantage::Advantage;
+        let norm = Vantage::Normal;
+        let dis = Vantage::Disadvantage;
+
+        assert_eq!(get_vantage(adv),"advantage".to_string());
+        assert_eq!(get_vantage(norm), "normal".to_string());
+        assert_eq!(get_vantage(dis), "disadvantage".to_string());
+
+    }
+    #[test]
+    fn test_mechanic_categories() {
+        let dmg = MechanicCategory::Damage;
+        let ndmg = MechanicCategory::NoDamage;
+        let hdmg = MechanicCategory::HalfDamage;
+        let adt = MechanicCategory::AdditionalTarget;
+        let adv = MechanicCategory::Advantage;
+        let dis = MechanicCategory::Disadvantage;
+        let sgt = MechanicCategory::Sight;
+        let lan = MechanicCategory::Language;
+        let hp = MechanicCategory::HitPoints;
+        let wp = MechanicCategory::WeaponProficiency;
+        let tp = MechanicCategory::ToolProficiency;
+        let dpb = MechanicCategory::DoubleProficiencyBonus;
+        assert_eq!(dmg,MechanicCategory::Damage);
+        assert_eq!(ndmg,MechanicCategory::NoDamage);
+        assert_eq!(hdmg,MechanicCategory::HalfDamage);
+        assert_eq!(adt,MechanicCategory::AdditionalTarget);
+        assert_eq!(adv,MechanicCategory::Advantage);
+        assert_eq!(dis,MechanicCategory::Disadvantage);
+        assert_eq!(sgt,MechanicCategory::Sight);
+        assert_eq!(lan,MechanicCategory::Language);
+        assert_eq!(hp,MechanicCategory::HitPoints);
+        assert_eq!(wp,MechanicCategory::WeaponProficiency);
+        assert_eq!(tp,MechanicCategory::ToolProficiency);
+        assert_eq!(dpb,MechanicCategory::DoubleProficiencyBonus);
     }
 }

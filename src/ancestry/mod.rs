@@ -529,12 +529,7 @@ impl BaseAncestralTraits {
     fn get_base_size(&self) -> String {
         self.base_size.clone()
     }
-    /*
-    fn get_random_string(&self, strings: Vec<String>) -> String {
-        let mut rng = rand::thread_rng();
-        strings.choose(&mut rng).cloned().unwrap_or(String::from("Wonderful"))
-    }
-     */
+
     fn get_skin_tone(&self) -> String {
         get_random_string(self.skin_tones.clone(), "wonderful".to_string())
     }
@@ -876,6 +871,25 @@ impl CulturalTraits {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::ancestry::{BaseAncestralTraits};
+    //use crate::character::{CharacterPreferences, get_vantage, MechanicCategory, Vantage};
+
+    #[test]
+    fn test_add_immunities() {
+        let immunities =
+            BaseAncestralTraits::add_immunities(vec!{"poison".to_string()});
+        assert_eq!(immunities.len(), 1)
+    }
+}
+
+
+
+
+
+
 
 /*
 
