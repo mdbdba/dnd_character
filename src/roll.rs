@@ -157,9 +157,9 @@ mod tests {
         assert_eq!(roll.get_rolls(), 1);
         assert_eq!(roll.get_adjustment(), 3);
         assert_eq!(roll.get_modify(), "");
-        println!("{:?}", roll.get_rawrolls());
-        println!("{:?}", roll.get_performed());
-        println!("{}", roll.get_subtotal());
-        println!("{}", roll.get_total());
+        // println!("{:?}", roll.get_rawrolls());
+        // println!("{:?}", roll.get_performed());
+        // println!("{}", roll.get_subtotal());
+        // println!("{}", roll.get_total());
     }
 }
