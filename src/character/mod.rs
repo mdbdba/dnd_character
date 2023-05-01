@@ -1,7 +1,5 @@
 use std::collections::HashMap;
-// use crate::ancestry::CharacterAbility;
 
-// #[derive(Clone)]
 pub struct CharacterAbility {
     pub ability_name: String, // What the ability is named in the documentation
     pub category: String,     // For sorting into what it does for the character. (Spell, Language)
@@ -11,6 +9,7 @@ pub struct CharacterAbility {
     pub availability: Vec<String>,    // Always, 1 per long rest, etc.
 }
 
+#[derive(PartialEq, Debug)]
 pub struct EffectValueRange {
     pub roll_multiplier: Option<i16>,
     pub roll_die: Option<i16>,
@@ -88,7 +87,7 @@ pub fn get_vantage(src: Vantage) -> String {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum DamageType {
     Acid,
     Bludgeoning,
@@ -202,8 +201,8 @@ impl Default for CharacterPreferences {
 
 #[cfg(test)]
 mod tests {
-    //use crate::ancestry::{AncestralTraits, CulturalTraits};
-    use crate::character::{CharacterPreferences, get_vantage, MechanicCategory, Vantage};
+    use super::*;
+    // use crate::character::{CharacterPreferences, get_vantage, MechanicCategory, Vantage};
 
     #[test]
     fn test_default_preferences() {
@@ -229,7 +228,7 @@ mod tests {
         assert_eq!(prefs.tool_proficiencies, Option::None);
     }
     #[test]
-    fn test_add_vantages() {
+    fn test_vantages() {
         let adv = Vantage::Advantage;
         let norm = Vantage::Normal;
         let dis = Vantage::Disadvantage;
@@ -266,4 +265,81 @@ mod tests {
         assert_eq!(tp,MechanicCategory::ToolProficiency);
         assert_eq!(dpb,MechanicCategory::DoubleProficiencyBonus);
     }
+    #[test]
+    fn test_get_damage_type() {
+        assert_eq!(get_damage_type(DamageType::Acid), "acid");
+        assert_eq!(get_damage_type(DamageType::Bludgeoning), "bludgeoning");
+        assert_eq!(get_damage_type(DamageType::Cold), "cold");
+        assert_eq!(get_damage_type(DamageType::Fire), "fire");
+        assert_eq!(get_damage_type(DamageType::Force), "force");
+        assert_eq!(get_damage_type(DamageType::Lightning), "lightning");
+        assert_eq!(get_damage_type(DamageType::Necrotic), "necrotic");
+        assert_eq!(get_damage_type(DamageType::Piercing), "piercing");
+        assert_eq!(get_damage_type(DamageType::Poison), "poison");
+        assert_eq!(get_damage_type(DamageType::Psychic), "psychic");
+        assert_eq!(get_damage_type(DamageType::Radiant), "radiant");
+        assert_eq!(get_damage_type(DamageType::Slashing), "slashing");
+        assert_eq!(get_damage_type(DamageType::Thunder), "thunder");
+        assert_eq!(get_damage_type(DamageType::None), "none");
+    }
+    #[test]
+    fn test_get_weapon_proficiency() {
+        let proficiency = get_weapon_proficiency(
+            "Sword proficiency".to_string(),
+            "Sword".to_string());
+        assert_eq!(proficiency.ability_name, "Sword proficiency");
+        assert_eq!(proficiency.category, "weapon");
+        assert_eq!(proficiency.specific_effect, vec!["Sword"]);
+        assert_eq!(proficiency.range, vec!["all"]);
+        assert_eq!(proficiency.mechanic.len(), 1);
+        assert_eq!(proficiency.mechanic[0].level, 1);
+        assert_eq!(proficiency.mechanic[0].effect_range, None);
+        assert_eq!(proficiency.mechanic[0].category, MechanicCategory::WeaponProficiency);
+        assert_eq!(proficiency.availability, vec!["always"]);
+    }
+
+    #[test]
+    fn test_get_check_proficiency_with_level() {
+        let ability = get_check_proficiency(
+            "Test Ability".to_string(),
+            "Acrobatics".to_string(),
+            "always".to_string(),
+            MechanicCategory::Advantage,
+            Some(2),
+        );
+
+        assert_eq!(ability.ability_name, "Test Ability");
+        assert_eq!(ability.category, "checks");
+        assert_eq!(ability.specific_effect, vec!["Acrobatics"]);
+        assert_eq!(ability.range, vec!["none"]);
+        let match_value = &ability.mechanic[0];
+        assert_eq!(match_value.level, 2);
+        assert_eq!(match_value.effect_range, None);
+        assert_eq!(match_value.category, MechanicCategory::Advantage);
+        assert_eq!(ability.availability, vec!["always"]);
+    }
+
+    #[test]
+    fn test_get_check_proficiency_without_level() {
+        let ability = get_check_proficiency(
+            "Test Ability".to_string(),
+            "Acrobatics".to_string(),
+            "always".to_string(),
+            MechanicCategory::DoubleProficiencyBonus,
+            None,
+        );
+
+        assert_eq!(ability.ability_name, "Test Ability");
+        assert_eq!(ability.category, "checks");
+        assert_eq!(ability.specific_effect, vec!["Acrobatics"]);
+        assert_eq!(ability.range, vec!["none"]);
+        let match_value = &ability.mechanic[0];
+        assert_eq!(match_value.level,1);
+        assert_eq!(match_value.effect_range, None);
+        assert_eq!(match_value.category, MechanicCategory::DoubleProficiencyBonus);
+        assert_eq!(ability.availability, vec!["always"]);
+    }
+
+
+
 }
